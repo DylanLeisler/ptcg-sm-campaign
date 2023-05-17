@@ -1,0 +1,13 @@
+{
+    "Confuse Ray": {
+        "cost": [
+        "Psychic",
+        "Psychic",
+        "Psychic"
+        ],
+        "convertedEnergyCost": 3,
+        "damage": "30",
+        "text": "Flip a coin. If heads, the Defending Pokémon is now Confused.",
+        "script": ""
+    }
+  }
