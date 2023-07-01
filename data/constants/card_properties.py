@@ -7,3 +7,8 @@ POKEMON = [
     "GX",
     "Ultra Beast"
 ]
+
+ENERGY = [
+    "Basic",
+    "Special"
+]

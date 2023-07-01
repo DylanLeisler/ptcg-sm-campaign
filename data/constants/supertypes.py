@@ -1,0 +1,7 @@
+
+
+SUPERTYPES = [
+    "Pokemon",
+    "Energy",
+    "Trainer"
+]

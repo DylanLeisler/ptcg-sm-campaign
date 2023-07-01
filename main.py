@@ -8,12 +8,14 @@ CARD_PATH = "data/cards/pokemon/sm10.json"
 
 
 cm = CardManager(CARD_PATH)
-p_cards = cm._get_raw_cards_by_supertype("Pokemon")
+# t_cards = cm._get_raw_cards_by_supertype("Energy")
 
 return_raw_card_data = False
-cards = cm.get_pokemon_cards(raw=return_raw_card_data)
+cards = cm.get_cards_by_supertype("Pokemon", raw=return_raw_card_data)
+
+# print(t_cards)
 
 if return_raw_card_data == False:
-    print([p.id for p in cards])
+    print([p.card_id for p in cards])
 else:
     print([p for p in cards])
