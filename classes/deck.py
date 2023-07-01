@@ -3,14 +3,14 @@ from typing import List
 import random
 
 class Deck(object):
-    "Contains all NUM_OF_CARDS cards and their states at all times. Should be a component of the CardCollection class."
+    """Contains all NUM_OF_CARDS cards and their states at all times."""
 
     NUM_OF_CARDS = 40
     MAX_NUM_OF_IDENTICAL_CARDS = 3
     
     def __init__(self, cards: List[Card]):
-        self.verify_num_of_cards(cards)
         self.cards = cards
+        self.verify_num_of_cards()
 
     def verify_num_of_cards(self):
         num_of_cards = len(self.cards)
