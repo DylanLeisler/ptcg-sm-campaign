@@ -31,9 +31,12 @@ class Deck(object):
         index = self.index_deck()    
         print(f"\nTotal Number of Cards in Deck: {len(self.cards)}")
         print("---------\n")
-        print(f'  Pokemon: {len(index["Pokemon"])}')
-        for card in index["Pokemon"]:
-            print(f"    {card}")
+        for supertype in ["Pokemon", "Energy", "Trainer"]:   
+            print("=====\n")
+            print(f'  {supertype}: {len(index[supertype])}\n')
+            for card in index[supertype]:
+                print(f"    {card}")
+            print()
         
     def get_card_count(self, supertype: str):
         card_index = {"Pokemon": [], "Energy": [], "Trainer": []}

@@ -19,11 +19,9 @@ return_raw_card_data = False
 
 testing_cards = cm.get_cards_by_supertype("Pokemon", raw=False)
 
-for t_card in testing_cards:
-    print()
-    print(t_card.name)
-
-exit()
+# for t_card in testing_cards:
+#     print()
+#     print(t_card.name)
 
 
 # Deck Obj Testing
