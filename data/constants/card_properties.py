@@ -12,3 +12,12 @@ ENERGY = [
     "Basic",
     "Special"
 ]
+
+TRAINER = [
+    "Supporter",
+    "Item",
+    "PokÃ©mon Tool",
+    "Pokémon Tool",
+    "Pokemon Tool",
+    "Stadium"
+]

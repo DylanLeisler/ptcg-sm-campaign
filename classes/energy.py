@@ -1,5 +1,4 @@
 from .card import Card
-from .attack import Attack
 from typing import Literal
 from data.constants.energy import ENERGY as ENERGY_CARD_ENERGY_TYPES
 from data.constants.card_properties import ENERGY as ENERGY_CARD_PROPS

@@ -4,6 +4,6 @@
 POKEMON = [("flavorText", ""), ("abilities", [""]), ("evolvesFrom", [""]), 
 ("evolvesTo", [""]), ("level", ""), ("attacks", "")]
 
-ENERGY = []
+ENERGY = [("rules", "")]
 
-TRAINER = []
+TRAINER = [("hp", ""), ("subtypes", ["Supporter"])]
