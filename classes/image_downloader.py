@@ -1,4 +1,4 @@
-import os.path
+import os
 import urllib.request
 from PIL import Image
 
@@ -18,7 +18,7 @@ class Image_Downloader():
         """
         self.generic_headers = headers
         
-    def download_image(self, url: str, file_name: str, headers="", save_to="./data/images/", overwrite=False):
+    def download_image(self, url: str, card_set: str, file_name: str, headers="", save_to="./data/images/", overwrite=False):
         """_summary_
 
         Args:
@@ -27,13 +27,18 @@ class Image_Downloader():
             headers (str): _description_. Defaults to self.generic_headers
             save_to (str, optional): Directory to save file. Defaults to "./data/images/".
         """
-        file_dir = save_to + file_name
+        file_dir = save_to + card_set + "/" + file_name
         
         is_remote = self.is_remote(url)
         headers = self.generic_headers if headers == "" else headers
         if self.is_existing_file(file_dir) and overwrite == False:
-            print("File already exists and overwrite is not enabled. Throw error.")
+            print("File already exists and overwrite is not enabled.")
             return -1
+        
+        if not os.path.exists(save_to + card_set):
+            os.makedirs(save_to + card_set)
+            print(f"Making dir: {save_to + card_set}")
+        
         
         request = urllib.request.Request(url, headers=headers)
         response = urllib.request.urlopen(request)
