@@ -10,9 +10,9 @@ class Trainer(Card):
 
 
     def __init__(self, name: str, card_id: str, supertype: str, 
-                 card_properties: list[str], description: str):
+                 card_properties: list[str], description: str, image: str):
 
-        super().__init__(name, card_id, supertype, card_properties, description)
+        super().__init__(name, card_id, supertype, card_properties, description, image)
 
 
 

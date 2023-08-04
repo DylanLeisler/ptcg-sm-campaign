@@ -12,12 +12,13 @@ class Card(ABC):
 
     @abstractmethod
     def __init__(self, name: str, card_id: str, super_type: str, card_properties: list[str], 
-                 description: str):
+                 description: str, image: str):
         self.name = name
         self.card_id = card_id
         self.super_type = super_type
         self.card_properties = card_properties
         self.description = description
+        self.image = image
 
 
 

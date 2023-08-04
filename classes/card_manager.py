@@ -114,7 +114,8 @@ class CardManager(object):
                     card_data["flavorText"], 
                     card_data["abilities"][0], 
                     [Attack(attack) for attack in card_data["attacks"]], 
-                    card_data["evolvesFrom"])
+                    card_data["evolvesFrom"],
+                    card_data["images"]["small"])
                     for card_data in raw_data]
         
     def _transform_energy_cards(self, raw_data: list):
@@ -123,6 +124,7 @@ class CardManager(object):
                     card_data["supertype"],
                     card_data["subtypes"],
                     card_data["rules"],
+                    card_data["images"]["small"],
                     card_data["name"].split()[0] if card_data["supertype"] == "Basic" else "Colorless")
                     for card_data in raw_data]
         
@@ -131,7 +133,8 @@ class CardManager(object):
                     card_data["id"],
                     card_data["supertype"],
                     card_data["subtypes"],
-                    card_data["rules"])
+                    card_data["rules"],
+                    card_data["images"]["small"])
                     for card_data in raw_data]
 
     

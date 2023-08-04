@@ -22,9 +22,9 @@ class Pokemon(Card):
 
 
     def __init__(self, name: str, card_id: str, super_type: str, energy_type: str, card_properties: list[str], 
-                 description: str, pkmn_power: str, moves: list[Attack], evolvesFrom: str):
+                 description: str, pkmn_power: str, moves: list[Attack], evolvesFrom: str, image: str):
 
-        super().__init__(name, card_id, super_type, card_properties, description)
+        super().__init__(name, card_id, super_type, card_properties, description, image)
         self.energy_type = energy_type
         # self.level = level
         self.pkmn_power = pkmn_power

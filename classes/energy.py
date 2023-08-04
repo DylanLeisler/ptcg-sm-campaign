@@ -13,9 +13,9 @@ class Energy(Card):
 
 
     def __init__(self, name: str, card_id: str, supertype: str, 
-                 card_properties: list[str], description: str, energy_type: Literal["Pokemon", "Energy", "Trainer"]):
+                 card_properties: list[str], description: str, image: str, energy_type: Literal["Pokemon", "Energy", "Trainer"]):
 
-        super().__init__(name, card_id, supertype, card_properties, description)
+        super().__init__(name, card_id, supertype, card_properties, description, image)
         self.energy_type = energy_type
 
 

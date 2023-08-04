@@ -1,5 +1,7 @@
 from classes.card_manager import CardManager
 from classes.deck import Deck
+from classes.image_downloader import Image_Downloader
+from time import sleep
 
 #TODO: handle missing key exceptions
 # moveless_pokemon = [pokemon_card for pokemon_card in filter(lambda x: "attacks" not in x.keys(), pokemon_cards)]           
@@ -29,6 +31,25 @@ pokemon_cards = cm.get_cards_by_supertype("Pokemon", raw=return_raw_card_data)
 energy_cards = cm.get_cards_by_supertype("Energy", raw=return_raw_card_data)
 trainer_cards = cm.get_cards_by_supertype("Trainer", raw=return_raw_card_data)
 
+downloader = Image_Downloader()
+
+#TODO: Have a script check for existing dirs named after card sets. If they're
+    #   not found, have them made before downloading card.
+
+for i in range(0,5):
+    url = pokemon_cards[i].image
+    name = pokemon_cards[i].card_id + "-" + url[url.rfind("/")+1:]
+    downloader.download_image(url, name)
+    sleep(2)
+exit()
+
+downloader = Image_Downloader()
+url = pokemon_cards[0].image
+name = "IMG-" + pokemon_cards[0].card_id + "-" + url[url.rfind("/")+1:]
+downloader.download_image(url, name)
+
+exit()
+
 NUM_OF_TRAINER_CARDS_NEEDED = 6
 NUM_OF_ENERGY_CARDS_NEEDED = 20
 NUM_OF_POKEMON_CARDS_NEEDED = 14
@@ -44,4 +65,6 @@ num_of_energy_cards_short = NUM_OF_ENERGY_CARDS_NEEDED - num_of_energy_cards
 my_deck = Deck(pokemon_cards[0:NUM_OF_POKEMON_CARDS_NEEDED+num_of_energy_cards_short] + 
                energy_cards[0:NUM_OF_ENERGY_CARDS_NEEDED] + 
                trainer_cards[0:NUM_OF_TRAINER_CARDS_NEEDED])
-my_deck.display_deck()
+# my_deck.display_deck()
+
+print(my_deck)
