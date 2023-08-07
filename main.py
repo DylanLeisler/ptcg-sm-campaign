@@ -1,8 +1,6 @@
 from classes.card_manager import CardManager
 from classes.deck import Deck
 from classes.image_downloader import Image_Downloader
-from time import sleep
-from django.utils.text import slugify
 
 #TODO: handle missing key exceptions
 # moveless_pokemon = [pokemon_card for pokemon_card in filter(lambda x: "attacks" not in x.keys(), pokemon_cards)]           
@@ -34,14 +32,9 @@ trainer_cards = cm.get_cards_by_supertype("Trainer", raw=return_raw_card_data)
 
 downloader = Image_Downloader()
 
+downloader.download_images(pokemon_cards)
+downloader.download_image(energy_cards)
 
-for i in range(0,1):
-    card = pokemon_cards[i]
-    url = card.image
-    card_set = card.card_id[0:card.card_id.find("-")]
-    name = slugify(card.card_id.replace(card_set + "-", "") + "-" + card.name) + ".png"
-    downloader.download_image(url, card_set, name)
-    sleep(2)
 exit()
 
 downloader = Image_Downloader()

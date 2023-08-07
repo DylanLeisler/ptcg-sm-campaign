@@ -4,12 +4,15 @@ import random
 from classes.pokemon import Pokemon
 from classes.energy import Energy
 from classes.trainer import Trainer
+from ..data.constants.deck import DECK_SIZE, MAX_REPEATING_CARDS
 
 class Deck(object):
-    """Contains all NUM_OF_CARDS cards and their states at all times."""
+    """Contains all DECK_SIZE cards and their states at all times."""
 
-    NUM_OF_CARDS = 40
-    MAX_NUM_OF_IDENTICAL_CARDS = 3
+    # These are defined here so they can be overwritten by an inheriting class
+    #  if needed, while still using self to refer to them.
+    DECK_SIZE = DECK_SIZE
+    MAX_REPEATING_CARDS = MAX_REPEATING_CARDS
     
     def __init__(self, cards: List[Card]):
         self.cards = cards
@@ -17,8 +20,8 @@ class Deck(object):
 
     def verify_num_of_cards(self):
         num_of_cards = len(self.cards)
-        if not num_of_cards == self.NUM_OF_CARDS:
-            raise ValueError(f"Number of cards in deck: {num_of_cards}. Number required: {self.NUM_OF_CARDS}")
+        if not num_of_cards == self.DECK_SIZE:
+            raise ValueError(f"Number of cards in deck: {num_of_cards}. Number required: {self.DECK_SIZE}")
         
     def index_deck(self):
         card_index = {"Pokemon": [], "Energy": [], "Trainer": []}
@@ -44,3 +47,8 @@ class Deck(object):
     
     def shuffle(self):
         random.shuffle(self.cards)
+        
+    def draw_card(self):
+        """_summary_
+        """
+        return self.cards.pop() if len(self.cards) > 0 else -1

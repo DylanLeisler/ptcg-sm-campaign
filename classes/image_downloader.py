@@ -1,10 +1,10 @@
 import os
 import urllib.request
+from time import sleep
+from django.utils.text import slugify
 from PIL import Image
 
 default_headers = {'User-Agent': 'PTCG Script'}
-
-URL = "https://images.pokemontcg.io/base1/70.png"
 
 
 class Image_Downloader():
@@ -18,7 +18,7 @@ class Image_Downloader():
         """
         self.generic_headers = headers
         
-    def download_image(self, url: str, card_set: str, file_name: str, headers="", save_to="./data/images/", overwrite=False):
+    def download_image(self, url: str, card_set: str, file_name: str, headers="", save_to="./data/images/", overwrite=False) -> int:
         """_summary_
 
         Args:
@@ -27,24 +27,37 @@ class Image_Downloader():
             headers (str): _description_. Defaults to self.generic_headers
             save_to (str, optional): Directory to save file. Defaults to "./data/images/".
         """
-        file_dir = save_to + card_set + "/" + file_name
+        res = "small"
+        file_dir = save_to + card_set + "/" + res + "/" + file_name
         
         is_remote = self.is_remote(url)
         headers = self.generic_headers if headers == "" else headers
+        
         if self.is_existing_file(file_dir) and overwrite == False:
             print("File already exists and overwrite is not enabled.")
             return -1
-        
-        if not os.path.exists(save_to + card_set):
-            os.makedirs(save_to + card_set)
-            print(f"Making dir: {save_to + card_set}")
+        if not os.path.exists(save_to + card_set + "/" + res):
+            os.makedirs(save_to + card_set + "/" + res)
+            print(f"Making dir: {save_to + card_set + '/' + res}")
         
         
         request = urllib.request.Request(url, headers=headers)
         response = urllib.request.urlopen(request)
         img = Image.open(response)
-        img.save(file_dir)
+        img.save(file_dir, quality="keep")
+        
         print(file_dir + " saved!")
+        return os.path.getsize(file_dir)
+        
+    def download_images(self, cards: list, ext=".png"):
+        for card in cards:
+            url = card.image
+            card_set = card.card_id[0:card.card_id.find("-")]
+            name = slugify(card.card_id.replace(card_set + "-", "") + "-" + card.name) + ext
+            file_size = self.download_image(url, card_set, name)
+            sleep_time = file_size / (80000 + (file_size**(1/1.2)))
+            sleep(sleep_time.real if sleep_time.real > 0 else 1)
+            exit()
         
     def is_remote(self, url: str) -> bool:
         return True if url.startswith("http") else False
