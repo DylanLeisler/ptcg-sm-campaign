@@ -27,8 +27,7 @@ class Deck(object):
         card_index = {"Pokemon": [], "Energy": [], "Trainer": []}
         for card in self.cards:
             card_index[f"{type(card).__name__}"].append(f"{card.card_id}: {card.name}")
-        return card_index
-            
+        return card_index       
                 
     def display_deck(self): 
         index = self.index_deck()    
@@ -42,13 +41,7 @@ class Deck(object):
             print()
         
     def get_card_count(self, supertype: str):
-        card_index = {"Pokemon": [], "Energy": [], "Trainer": []}
-        
+        card_index = {"Pokemon": [], "Energy": [], "Trainer": []}     
     
     def shuffle(self):
         random.shuffle(self.cards)
-        
-    def draw_card(self):
-        """_summary_
-        """
-        return self.cards.pop() if len(self.cards) > 0 else -1

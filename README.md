@@ -6,7 +6,7 @@ README is still WIP
 ## **Summary**
 
 ### What
-This project aims to make a video game version of the PTCG (Pokemon Trading Card Game,) not entirely unlike the original PTCGs for the Gameboy Color. The implementation will be flexible and **customizable** (by the user.) The intent is to create a high quality base game **worth playing out-of-the-box,** but with an accessible collection of assets that can be **changed or added with as little overhead and difficulty as reasonbly achievable**. 
+This project aims to make a video game version of the PTCG (Pokemon Trading Card Game,) not entirely unlike the original PTCGs for the Gameboy Color. The implementation will be flexible and **customizable** (by the user.) The intent is to create a high quality base game **worth playing out-of-the-box,** but with an accessible collection of assets that can be **changed or added with as little overhead and difficulty as reasonably achievable**. 
 
 ### Why
 The current, official video game implementation of the PTCG (PTCG Live) is cloud-based. At the time of writing this, it **lacks a campaign** and has **little to no support for CPU opponents**. Since it is solely a PvP experience, it is not customizable.
