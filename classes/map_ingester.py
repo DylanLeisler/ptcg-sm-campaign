@@ -1,14 +1,15 @@
 import json
+import pygame.transform, pygame.image
 
 class Map_Ingester():
     
     instructions = ""
     
     
-    def __init__(self, path="./data/tilesets/ingest_list.json") -> None:
+    def __init__(self, scale=4, path="./data/tilesets/ingest_list.json") -> None:
         self.path = path
         self._ingest_list()
-        pass
+        self.scale = scale
     
     def _ingest_list(self):
         try:
@@ -23,6 +24,18 @@ class Map_Ingester():
             print(f"An error occurred: {e}")
             
     def build_index(self):
+        self.index = {}
+        for targ in self.instructions["TARGETS"].keys():
+            self.index[targ] = self.instructions["TARGETS"][targ]
+            for comp in self.index[targ]:
+                for comp_index,tile_spec in enumerate(self.index[targ][comp]):
+                    path = f"./data/tilesets/16x16/{targ}/{comp}/{tile_spec['NAME']}{tile_spec['EXT']}"
+                    self.index[targ][comp][comp_index]["PATH"] = path
+                    self.index[targ][comp][comp_index]["TILEMAP"] = pygame.transform.scale_by(
+                        pygame.image.load(path).convert_alpha(), 
+                        self.scale
+                    )
+                
         
     
     

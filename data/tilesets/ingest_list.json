@@ -2,7 +2,7 @@
 {
     "DEFAULT_KEYS": ["OBJECTS", "FLOORS", "WALLS"],
     "TARGETS": {
-        "LABS": {
+        "LAB": {
             "OBJECTS": [
                 {
                     "NAME": "chair",

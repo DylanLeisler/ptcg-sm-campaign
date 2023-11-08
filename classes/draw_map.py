@@ -16,31 +16,6 @@ class Draw_Map():
     
     PATH_TO_TILESETS = ""
     
-    # TILES: {
-    #     "LAB": {
-    #         "OBJECTS": [],
-    #         "WALLS": {
-    #             "BOTTOM": {
-    #                 "LEFT": [],
-    #                 "RIGHT": [],
-    #                 "GENERIC": []
-    #             },
-    #             "TOP": {
-    #                 "LEFT": [],
-    #                 "RIGHT": []
-    #             },
-    #             "DOORWAY": {
-    #                 "SIDEWAYS": [],
-    #                 "FORWARD": []
-    #             },
-    #             "GENERIC": {
-    #                 "WALL": []
-    #             }
-    #         },
-    #         "FLOOR": {}
-    #     }
-    # }
-    
     TILES = {}
     
     def __init__(self, PATH_TO_TILESETS="./data/tilesets/16x16"):
