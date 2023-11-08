@@ -1,6 +1,8 @@
 from classes.card_manager import CardManager
-from classes.deck import Deck
+# from classes.deck import Deck
 from classes.image_downloader import Image_Downloader
+from classes.draw_map import Draw_Map
+import pygame
 
 #TODO: handle missing key exceptions
 # moveless_pokemon = [pokemon_card for pokemon_card in filter(lambda x: "attacks" not in x.keys(), pokemon_cards)]           
@@ -8,6 +10,75 @@ from classes.image_downloader import Image_Downloader
 
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
+
+pygame.init()
+
+TILE_SIZE = 16*4
+MAP_WIDTH, MAP_HEIGHT = 5, 6
+SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
+
+# Set up the display
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Tile Map Game")
+
+
+map_renderer = Draw_Map()
+map_renderer.load_tiles_by_location("lab")
+
+# Sample map layout: a list of strings or numbers indicating tiles
+map_data = [
+    ["top_left", "top_center", "top_center", "top_center", "top_right"],
+    ["side_center", "bottom_center", "bottom_center", "bottom_center", "side_center"],
+    ["side_center", "floor", "floor", "floor", "side_center"],
+    ["side_center", "floor", "floor", "floor", "side_center"],
+    ["bottom_left", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_right"],
+    ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center"],
+    ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
+]
+
+# map_data = [
+#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],  # Each number corresponds to a tile
+#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
+#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
+#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
+#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
+# ]
+
+# Main game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # Draw the tile map
+    TOTAL_OFF_SET = {"h": 0, "v": 0}
+    for row_index, row in enumerate(map_data):
+        for col_index, tile in enumerate(row):
+            tile_key = "WALLS"
+            key = map_data[row_index][col_index]
+            if key == "floor":
+                tile_key = "FLOORS"
+            LOCAL_TILE_SIZE = TILE_SIZE/2
+            if key == "top_center" or key == "bottom_shadow" or key == "top_left" or key == "top_right" or key == "bottom_right" or key == "bottom_left":
+                LOCAL_TILE_SIZE *= 2
+            image = map_renderer.TILES[tile_key][key]
+            screen.blit(image, (TOTAL_OFF_SET["h"], TOTAL_OFF_SET["v"]))
+            image_width, image_height = image.get_size()
+            TOTAL_OFF_SET["h"] += image_width
+            if col_index == (len(row)-1):
+                TOTAL_OFF_SET["v"] += image_height
+                TOTAL_OFF_SET["h"] = 0
+
+    # Update the display
+    pygame.display.flip()
+
+# Clean up
+pygame.quit()
+
+# print(map_renderer.TILES)
+
+exit()
 
 
 cm = CardManager(CARD_PATH)
@@ -35,7 +106,8 @@ downloader = Image_Downloader()
 downloader.download_images(pokemon_cards)
 downloader.download_image(energy_cards)
 
-exit()
+
+###
 
 downloader = Image_Downloader()
 url = pokemon_cards[0].image
