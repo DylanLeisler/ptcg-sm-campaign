@@ -1,0 +1,98 @@
+
+{
+    "DEFAULT_KEYS": ["OBJECTS", "FLOORS", "WALLS"],
+    "TARGETS": {
+        "LABS": {
+            "OBJECTS": [
+                {
+                    "NAME": "chair",
+                    "EXT": ".png",
+                    "COLLISION": true,
+                    "SHORT": null
+                },
+                {
+                    "NAME": "game_table",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "table"
+                }
+            ],
+            "FLOORS": [
+                {
+                    "NAME": "floor",
+                    "EXT": ".png",
+                    "COLLISION": true,
+                    "SHORT": null
+                }
+            ],
+            "WALLS": [
+                {
+                    "NAME": "bottom_center",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "bt_cnt"
+                },
+                {
+                    "NAME": "bottom_floor",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "bt_flr"
+                },
+                {
+                    "NAME": "bottom_left",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "bt_lt"
+                },
+                {
+                    "NAME": "bottom_right",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "bt_rt"
+                },
+                {
+                    "NAME": "bottom_shadow",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": ""
+                },
+                {
+                    "NAME": "door_sideways_bottom",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "door_sw_bt"
+                },
+                {
+                    "NAME": "door_sideways",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "door_sw_fw"
+                },
+                {
+                    "NAME": "side_center",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "side_cnt"
+                },
+                {
+                    "NAME": "top_center",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "top_cnt"
+                },
+                {
+                    "NAME": "top_left",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "top_lt"
+                },
+                {
+                    "NAME": "top_right",
+                    "EXT": ".png",
+                    "COLLISION": false,
+                    "SHORT": "top_rt"
+                }
+            ]
+        }
+    } 
+}
