@@ -2,6 +2,10 @@ import pygame.image, pygame.transform
 
 
 class Draw_Map():
+    """
+    Contains hardcoded index of all tile types as OBJECTS, WALLS, and FLOORS.
+    Call load_tiles_by_location and pass dir to load tiles into self.TILES
+    """
     
     index_of_tiles = {
     "OBJECTS": ["chair" , "game_table"],
@@ -14,9 +18,9 @@ class Draw_Map():
     "FLOORS": ["floor"]
 }
     
-    PATH_TO_TILESETS = ""
-    
+    PATH_TO_TILESETS = None
     TILES = {}
+  
     
     def __init__(self, PATH_TO_TILESETS="./data/tilesets/16x16"):
         self.PATH_TO_TILESETS = PATH_TO_TILESETS
@@ -30,6 +34,11 @@ class Draw_Map():
         return pygame.image.load(path).convert_alpha()
     
     def load_tiles_by_location(self, location: str):
+        """
+        Calls self.load_tile to load individual tiles into keys defined in index_of_tiles
+        Args:
+            location (str): Path to target directory from self.PATH_TO_TILESETS
+        """
         indexes = {}
         for key in self.index_of_tiles.keys():
             for tile in self.index_of_tiles[key]:

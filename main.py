@@ -49,12 +49,16 @@ map_data = [
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
 # ]
 
+print(map_ingester.index)
+exit()
+
 # Main game loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
 
     # Draw the tile map
     TOTAL_OFF_SET = {"h": 0, "v": 0}

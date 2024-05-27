@@ -1,7 +1,7 @@
 
 {
     "DEFAULT_KEYS": ["OBJECTS", "FLOORS", "WALLS"],
-    "TARGETS": {
+    "LOCATIONS": {
         "LAB": {
             "OBJECTS": [
                 {
