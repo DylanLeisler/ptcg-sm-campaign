@@ -169,3 +169,4 @@ bin/pip3.10
 bin/python
 bin/python3
 bin/python3.10
+.vscode/settings.json
