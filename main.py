@@ -1,8 +1,8 @@
 from classes.card_manager import CardManager
 # from classes.deck import Deck
 from classes.image_downloader import Image_Downloader
-from classes.draw_map import Draw_Map
-from classes.map_ingester import Map_Ingester
+from classes.overworld.draw_map import Draw_Map
+from classes.overworld.map_ingester import Map_Ingester
 import json
 import pygame
 
@@ -24,11 +24,13 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tile Map Game")
 
 
-map_renderer = Draw_Map()
-map_renderer.load_tiles_by_location("lab")
+#map_renderer = Draw_Map()
+#map_renderer.load_tiles_by_location("lab")
 
 map_ingester = Map_Ingester()
-map_ingester.build_index()
+# map_ingester.get_index()
+map_ingester.build_index()\
+            .print_index()
 
 # Sample map layout: a list of strings or numbers indicating tiles
 map_data = [
@@ -49,7 +51,6 @@ map_data = [
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
 # ]
 
-print(map_ingester.index)
 exit()
 
 # Main game loop

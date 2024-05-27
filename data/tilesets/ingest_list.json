@@ -1,98 +1,92 @@
-
 {
-    "DEFAULT_KEYS": ["OBJECTS", "FLOORS", "WALLS"],
     "LOCATIONS": {
         "LAB": {
-            "OBJECTS": [
-                {
-                    "NAME": "chair",
+            "TILES": {
+                "chair": {
+                    "TYPE": "OBJECT",
                     "EXT": ".png",
                     "COLLISION": true,
                     "SHORT": null
                 },
-                {
-                    "NAME": "game_table",
+                "game_table": {
+                    "TYPE": "OBJECT",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "table"
-                }
-            ],
-            "FLOORS": [
-                {
-                    "NAME": "floor",
+                },
+                "floor": {
+                    "TYPE": "FLOOR",
                     "EXT": ".png",
                     "COLLISION": true,
                     "SHORT": null
-                }
-            ],
-            "WALLS": [
-                {
-                    "NAME": "bottom_center",
+                },
+                "bottom_center": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "bt_cnt"
                 },
-                {
-                    "NAME": "bottom_floor",
+                "bottom_floor": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "bt_flr"
                 },
-                {
-                    "NAME": "bottom_left",
+                "bottom_left": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "bt_lt"
                 },
-                {
-                    "NAME": "bottom_right",
+                "bottom_right": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "bt_rt"
                 },
-                {
-                    "NAME": "bottom_shadow",
+                "bottom_shadow": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": ""
                 },
-                {
-                    "NAME": "door_sideways_bottom",
+                "door_sideways_bottom": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "door_sw_bt"
                 },
-                {
-                    "NAME": "door_sideways",
+                "door_sideways": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "door_sw_fw"
                 },
-                {
-                    "NAME": "side_center",
+                "side_center": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "side_cnt"
                 },
-                {
-                    "NAME": "top_center",
+                "top_center": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "top_cnt"
                 },
-                {
-                    "NAME": "top_left",
+                "top_left": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "top_lt"
                 },
-                {
-                    "NAME": "top_right",
+                "top_right": {
+                    "TYPE": "WALL",
                     "EXT": ".png",
                     "COLLISION": false,
                     "SHORT": "top_rt"
                 }
-            ]
+            }
         }
-    } 
+    }
 }
