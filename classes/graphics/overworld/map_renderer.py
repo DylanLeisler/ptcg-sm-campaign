@@ -16,8 +16,8 @@ class MapRenderer():
     def __init__(self, screen: 'pygame.Surface', tile_sheet: Dict, instructions: Dict[str, List[List[str]]], dimensions: Tuple[int, int]):
         """
         Initializes the MapRenderer with the given screen, tile sheet, and instructions.
-        Sets the screen dimensions according to the dimensions argument. The actual displaying
-        of a tile occurs with the `execute_instructions` method.
+        DIMENSIONS should match actual dimensions used for construction of screen. The 
+        displaying of tiles occurs with the `execute_instructions` method.
 
         Args:
             screen (pygame.Surface): The display surface returned by pygame.display.set_mode,
