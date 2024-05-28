@@ -1,10 +1,10 @@
 import logging
 
 # Create a logger object
-logger = logging.getLogger('graphics_logger')
+graphics_logger = logging.getLogger('graphics_logger')
 
 # Optionally set the level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-logger.setLevel(logging.DEBUG)
+graphics_logger.setLevel(logging.DEBUG)
 
 # Create a handler (console handler, file handler, etc.)
 handler = logging.StreamHandler()  # Console handler
@@ -17,4 +17,4 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 
 # Add the handler to the logger
-logger.addHandler(handler)
+graphics_logger.addHandler(handler)

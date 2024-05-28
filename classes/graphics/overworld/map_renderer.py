@@ -1,5 +1,8 @@
 from typing import Dict, List, Tuple
-import pygame.Surface
+import pygame
+from classes.graphics.logging import graphics_logger as log
+
+log.setLevel("WARNING")
 
 
 class MapRenderer():
@@ -13,7 +16,7 @@ class MapRenderer():
     TILES = {}
   
     
-    def __init__(self, screen: 'pygame.Surface', tile_sheet: Dict, instructions: Dict[str, List[List[str]]], dimensions: Tuple[int, int]):
+    def __init__(self, screen: 'pygame.Surface', tile_sheet: Dict, instructions: Dict[str, List[List[str]]], DIMENSIONS: Tuple[int, int]):
         """
         Initializes the MapRenderer with the given screen, tile sheet, and instructions.
         DIMENSIONS should match actual dimensions used for construction of screen. The 
@@ -40,24 +43,20 @@ class MapRenderer():
         self.screen = screen
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = DIMENSIONS[0], DIMENSIONS[1]
         
-    def set_instructions(self, instructions: Dict[str, List[list]]) -> 'Map_Renderer':
+    def set_instructions(self, instructions: Dict[str, List[list]]) -> 'MapRenderer':
         self.area = instructions["area"]
         self.specs = instructions["specs"]
         return self
     
-    # def _load_instructions(self, instructions_json) -> List[list]:
-    #     return json.load(instructions_json)
-    
-    def execute_instructions(self) -> 'Map_Renderer':
+    def execute_instructions(self) -> 'MapRenderer':
         for row_id,row in enumerate(self.specs):
             for tile_id,tile in enumerate(row):
                 tilemap = self.tile_sheet[self.area]["TILES"][tile]["TILEMAP"]
-                # print(tile)
-                #time.sleep(1)
-                #print(f"\tTILE_ID: {tile_id}\n\tROW_ID: {row_id}")
+                log.debug(tile)
+                log.debug(f"\tTILE_ID: {tile_id}\n\tROW_ID: {row_id}")
                 
                 self._render_tile(tilemap)
-                # print(Map_Renderer.OFFSET)
+                log.debug(MapRenderer.OFFSET)
                 
                 offset = [False, False]
                 if tile_id == (len(row) - 1):
@@ -69,18 +68,18 @@ class MapRenderer():
         return self   
     
     def _render_tile(self, tile):
-        self.screen.blit(tile, (Map_Renderer.OFFSET["x"], Map_Renderer.OFFSET["y"]))
+        self.screen.blit(tile, (MapRenderer.OFFSET["x"], MapRenderer.OFFSET["y"]))
         return self
     
-    def _adjust_offset(self, tile_dimensions, axis_reset) -> 'Map_Renderer':
+    def _adjust_offset(self, tile_dimensions, axis_reset) -> 'MapRenderer':
         image_width, image_height = tile_dimensions[0], tile_dimensions[1]
         
         if axis_reset[0]:
             self.reset_offset("x")
-            Map_Renderer.OFFSET["y"] += image_height
-            # print(f"\nIMAGE_HEIGHT: {image_height}\n\tMAP_REND.OFFSET[y]: {Map_Renderer.OFFSET['y']}")
+            MapRenderer.OFFSET["y"] += image_height
+            log.debug(f"\nIMAGE_HEIGHT: {image_height}\n\tMAP_REND.OFFSET[y]: {MapRenderer.OFFSET['y']}")
         else:
-            Map_Renderer.OFFSET["x"] += image_width
+            MapRenderer.OFFSET["x"] += image_width
             
         if axis_reset[1]:
             self.reset_offset("y")
@@ -88,8 +87,8 @@ class MapRenderer():
   
         return self
 
-    def reset_offset(self, axis) -> 'Map_Renderer':
-        Map_Renderer.OFFSET[axis] = 0
+    def reset_offset(self, axis) -> 'MapRenderer':
+        MapRenderer.OFFSET[axis] = 0
         return self
     
 if __name__ == '__main__':

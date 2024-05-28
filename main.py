@@ -1,7 +1,7 @@
 from classes.card_manager import CardManager
 # from classes.deck import Deck
 from classes.image_downloader import Image_Downloader
-from classes.graphics.overworld.map_renderer import Map_Renderer
+from classes.graphics.overworld.map_renderer import MapRenderer
 from classes.graphics.tile_ingester import Tile_Ingester
 import pygame
 
@@ -42,7 +42,7 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-map_renderer = Map_Renderer(screen, map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
+map_renderer = MapRenderer(screen, map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # map_data = [
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],  # Each number corresponds to a tile
