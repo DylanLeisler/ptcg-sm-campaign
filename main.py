@@ -42,7 +42,7 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-map_renderer = Map_Renderer(map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT), screen)
+map_renderer = Map_Renderer(screen, map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # map_data = [
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],  # Each number corresponds to a tile

@@ -1,34 +1,46 @@
-from asyncio import sleep
-import time
-from typing import Dict
-import pygame
-import json
+from typing import Dict, List, Tuple
+import pygame.Surface
 
 
-class Map_Renderer():
-    """Checks tile_sheet arg for key name and then uses pygame to 
-    display contents of "TILEMAP" child-key. Will read instructions
-    passed to it (json) to establish order and quantity of objects.
-
+class MapRenderer():
+    """
+    Utilizes a pygame surface (or 'screen') to parse instructions and display
+    specified tiles from a tile map (or 'tile_sheet') based on the order specified
+    in the instructions.
     """
     
     OFFSET = {'x': 0, 'y': 0}
     TILES = {}
   
     
-    def __init__(self, tile_sheet: dict, instructions: Dict[str, list], DIMENSIONS: set, screen):
+    def __init__(self, screen: 'pygame.Surface', tile_sheet: Dict, instructions: Dict[str, List[List[str]]], dimensions: Tuple[int, int]):
+        """
+        Initializes the MapRenderer with the given screen, tile sheet, and instructions.
+        Sets the screen dimensions according to the dimensions argument. The actual displaying
+        of a tile occurs with the `execute_instructions` method.
+
+        Args:
+            screen (pygame.Surface): The display surface returned by pygame.display.set_mode,
+            which should have dimensions equal to the 'DIMENSIONS' argument.
+            
+            tile_sheet (Dict): Dictionary of available tiles stored with relevant properties.
+            The 'TILEMAP' property is required; it's value will be displayed as is.
+            
+            instructions (Dict[str, List[List[str]]]): The 'area' key should correspond with
+            the directory the tiles are stored in. The 'specs' key is a list of rows, each
+            a list of columns; they directly corresponds with what will appear on the screen
+            and in what order. Each value should be the targeted key under LOCATION.<area>.TILES. 
+            Each key represents a different tile object.
+            
+            dimensions (Tuple[int, int]): Must correspond to the dimensions used as an argument
+            in pygame.display.set_mode upon the construction of 'screen'.
+        """
         self.tile_sheet = tile_sheet
         self.set_instructions(instructions)
         self.screen = screen
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = DIMENSIONS[0], DIMENSIONS[1]
-        # self.init_display()
-
-    # def set_display(self, screen: pygame.display.set_mode):
-    #     # Set up the display
-    #     self.screen = pygame.display.set_mode((Map_Renderer.SCREEN_WIDTH, Map_Renderer.SCREEN_HEIGHT))
-    #     pygame.display.set_caption("Tile Map Game")
         
-    def set_instructions(self, instructions: Dict[str, list]) -> 'Map_Renderer':
+    def set_instructions(self, instructions: Dict[str, List[list]]) -> 'Map_Renderer':
         self.area = instructions["area"]
         self.specs = instructions["specs"]
         return self
