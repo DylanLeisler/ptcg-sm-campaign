@@ -1,9 +1,8 @@
 from classes.card_manager import CardManager
 # from classes.deck import Deck
 from classes.image_downloader import Image_Downloader
-from classes.overworld.draw_map import Draw_Map
-from classes.overworld.map_ingester import Map_Ingester
-import json
+from classes.graphics.overworld.map_renderer import Map_Renderer
+from classes.graphics.tile_ingester import Tile_Ingester
 import pygame
 
 #TODO: handle missing key exceptions
@@ -13,13 +12,12 @@ import pygame
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
 
-pygame.init()
-
 TILE_SIZE = 16*4
 MAP_WIDTH, MAP_HEIGHT = 5, 6
 SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
 
-# Set up the display
+pygame.init()
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tile Map Game")
 
@@ -27,13 +25,14 @@ pygame.display.set_caption("Tile Map Game")
 #map_renderer = Draw_Map()
 #map_renderer.load_tiles_by_location("lab")
 
-map_ingester = Map_Ingester()
+map_ingester = Tile_Ingester()
 # map_ingester.get_index()
 map_ingester.build_index()\
-            .print_index()
+            # .print_index()
 
 # Sample map layout: a list of strings or numbers indicating tiles
-map_data = [
+map_data = {"area": "LAB", 
+            "specs": [
     ["top_left", "top_center", "top_center", "top_center", "top_right"],
     ["side_center", "bottom_center", "bottom_center", "bottom_center", "side_center"],
     ["side_center", "floor", "floor", "floor", "side_center"],
@@ -41,7 +40,9 @@ map_data = [
     ["bottom_left", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_right"],
     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center"],
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
-]
+]}
+
+map_renderer = Map_Renderer(map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT), screen)
 
 # map_data = [
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],  # Each number corresponds to a tile
@@ -50,6 +51,21 @@ map_data = [
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
 #     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
 # ]
+
+                # Main game loop
+running = True
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        
+    map_renderer.execute_instructions()
+            
+    # Update the display
+    pygame.display.flip()
+
+# Clean up
+pygame.quit()
 
 exit()
 

@@ -1,4 +1,5 @@
-import pygame.image, pygame.transform
+from pygame import image, transform
+
 
 
 class Draw_Map():
@@ -31,7 +32,7 @@ class Draw_Map():
     def load_tile(self, location: str, component: str, tile_name: str):
         path = self.PATH_TO_TILESETS + "/" + location.upper() + "/" + component.upper() + "/" + tile_name
         path = path if path.endswith(".png") else path + ".png"
-        return pygame.image.load(path).convert_alpha()
+        return image.load(path).convert_alpha()
     
     def load_tiles_by_location(self, location: str):
         """
@@ -44,7 +45,7 @@ class Draw_Map():
             for tile in self.index_of_tiles[key]:
                 if not indexes.get(key):
                     indexes[key] = {}
-                indexes[key][tile] = pygame.transform.scale_by(self.load_tile(location, key, tile), 4)
+                indexes[key][tile] = transform.scale_by(self.load_tile(location, key, tile), 4)
         self.TILES = indexes
         
 

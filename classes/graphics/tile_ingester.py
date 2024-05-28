@@ -1,7 +1,7 @@
 import json
 import pygame.transform, pygame.image
 
-class Map_Ingester():
+class Tile_Ingester():
     """
     Pulls json from from path during init to load Map_Ingester.instructions
     Call build_index to pull tiles specified in instructions to self.index
@@ -29,7 +29,7 @@ class Map_Ingester():
         except Exception as e:
             print(f"An error occurred: {e}")
             
-    def build_index(self) -> 'Map_Ingester':
+    def build_index(self) -> 'Tile_Ingester':
         """Uses self.instructions to create index of tile properties/specs for each location/directory and
         stores it in self.index. Also appends file path and pygame image object to each tile spec.
         """
@@ -77,7 +77,7 @@ class Map_Ingester():
         self._isIndex()
         return self.index
     
-    def print_index(self) -> 'Map_Ingester':
+    def print_index(self) -> 'Tile_Ingester':
         """Prints self.index to the console if it is found.
         """
         self._isIndex()
