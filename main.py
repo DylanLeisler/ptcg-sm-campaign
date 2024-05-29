@@ -8,12 +8,13 @@ import pygame
 #TODO: handle missing key exceptions
 # moveless_pokemon = [pokemon_card for pokemon_card in filter(lambda x: "attacks" not in x.keys(), pokemon_cards)]           
 
+SPRITE_MAP_PATH="data\overworld_sprites\GBC_PTCG2_OVERWORLD_SPRITE_MAP.png"
 
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
 
 TILE_SIZE = 16*4
-MAP_WIDTH, MAP_HEIGHT = 5, 6
+MAP_WIDTH, MAP_HEIGHT = 8, 6
 SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
 
 pygame.init()
@@ -31,15 +32,26 @@ map_ingester.build_index()\
             # .print_index()
 
 # Sample map layout: a list of strings or numbers indicating tiles
+# map_data = {"area": "LAB", 
+#             "specs": [
+#     ["top_left", "top_center", "top_center", "top_center", "top_right"],
+#     ["side_center", "bottom_center", "bottom_center", "bottom_center", "side_center"],
+#     ["side_center", "floor", "floor", "floor", "side_center"],
+#     ["side_center", "floor", "floor", "floor", "side_center"],
+#     ["bottom_left", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_right"],
+#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center"],
+#     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
+# ]}
+
 map_data = {"area": "LAB", 
             "specs": [
-    ["top_left", "top_center", "top_center", "top_center", "top_right"],
-    ["side_center", "bottom_center", "bottom_center", "bottom_center", "side_center"],
-    ["side_center", "floor", "floor", "floor", "side_center"],
-    ["side_center", "floor", "floor", "floor", "side_center"],
-    ["bottom_left", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_right"],
-    ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center"],
-    ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
+    ["top_left", "top_center", "top_center", "top_center", "top_center", "top_center", "top_center", "top_right"],
+    ["side_center", "bottom_center", "bottom_center", "bottom_center","bottom_center", "bottom_center", "bottom_center", "side_center"],
+    ["side_center", "floor", "floor", "floor", "floor", "floor", "floor", "side_center"],
+    ["side_center", "floor", "floor", "floor", "floor", "floor", "floor", "side_center"],
+    ["bottom_left", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_right"],
+    ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center"],
+    ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
 map_renderer = MapRenderer(screen, map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
