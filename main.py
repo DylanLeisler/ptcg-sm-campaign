@@ -98,12 +98,16 @@ while running:
     key = pygame.key.get_pressed()
     dist = 2 # distance moved in 1 frame
     if key[pygame.K_DOWN]: # down key
+        player_sprite.direction = "forward"
         player_sprite.position[1] += dist # move down
     elif key[pygame.K_UP]: # up key
+        player_sprite.direction = "backward"
         player_sprite.position[1] -= dist # move up
-    if key[pygame.K_RIGHT]: # right key
+    elif key[pygame.K_RIGHT]: # right key
+        player_sprite.direction = "right"
         player_sprite.position[0] += dist # move right
     elif key[pygame.K_LEFT]: # left key
+        player_sprite.direction = "left"
         player_sprite.position[0] -= dist # move left
        
         

@@ -49,6 +49,8 @@ class SpriteMap:
             
         args = locals()
         del args["self"]
+        print(args)
+        exit
         
         sprite = {}
         for direction,coords in args.items():
