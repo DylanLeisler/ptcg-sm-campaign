@@ -3,12 +3,14 @@ from classes.card_manager import CardManager
 from classes.image_downloader import Image_Downloader
 from classes.graphics.overworld.map_renderer import MapRenderer
 from classes.graphics.tile_ingester import Tile_Ingester
+from classes.graphics.overworld.sprite_map import SpriteMap
+from classes.graphics.overworld.sprite import Sprite
 import pygame
 
 #TODO: handle missing key exceptions
 # moveless_pokemon = [pokemon_card for pokemon_card in filter(lambda x: "attacks" not in x.keys(), pokemon_cards)]           
 
-SPRITE_MAP_PATH="data\overworld_sprites\GBC_PTCG2_OVERWORLD_SPRITE_MAP.png"
+SPRITE_MAP_PATH="data/overworld_sprites/alpha_sprite_map.png"
 
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
@@ -21,6 +23,8 @@ pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Tile Map Game")
+
+clock = pygame.time.Clock()
 
 
 #map_renderer = Draw_Map()
@@ -56,25 +60,61 @@ map_data = {"area": "LAB",
 
 map_renderer = MapRenderer(screen, map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# map_data = [
-#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],  # Each number corresponds to a tile
-#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
-#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
-#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
-#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "top_right"],
-# ]
+transparent_color = (255, 127, 39)
+top_border = 34
+left_border = 9
+between_border = 1
+sprite_length = 16
+sprite_height = 16
 
-                # Main game loop
+sprite_handler = SpriteMap(SPRITE_MAP_PATH, 
+                           transparent_color=transparent_color,
+                           sprite_dimensions=(sprite_length, sprite_height),
+                           left_border=left_border, 
+                           top_border=top_border,
+                           between_border=1)
+
+
+player_sprite = Sprite(
+    sprite_handler.get_animated_sprite(
+        [(0,0),(1,0),(2,0)],
+        [(3,0),(4,0),(5,0)], 
+        [(6,0),(7,0)], 
+        [(8,0),(9,0)]
+        )
+    )
+
+                # Main game loop          
+                
 running = True
 while running:
+    dt = clock.tick(60)/1000
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         
     map_renderer.execute_instructions()
+    
+    key = pygame.key.get_pressed()
+    dist = 2 # distance moved in 1 frame
+    if key[pygame.K_DOWN]: # down key
+        player_sprite.position[1] += dist # move down
+    elif key[pygame.K_UP]: # up key
+        player_sprite.position[1] -= dist # move up
+    if key[pygame.K_RIGHT]: # right key
+        player_sprite.position[0] += dist # move right
+    elif key[pygame.K_LEFT]: # left key
+        player_sprite.position[0] -= dist # move left
+       
+        
+    player_sprite.update(dt)
+    image = player_sprite.get_frame()
+
+    screen.blit(image, player_sprite.position)
             
     # Update the display
     pygame.display.flip()
+    
 
 # Clean up
 pygame.quit()
