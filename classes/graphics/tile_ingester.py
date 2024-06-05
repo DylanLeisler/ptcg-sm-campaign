@@ -37,14 +37,14 @@ class Tile_Ingester():
         # An example of an area would be 'lab'
         for area in self.instructions["LOCATIONS"].keys():
             
-            # Make index["LAB"] = {'LAB': {'TILES':[...],[...]}}
+            # Make index["LAB"] = {'LAB': {'chair':[...],[...]}}
             # Omits LOCATIONS key from index
             self.index[area] = self.instructions["LOCATIONS"][area]
             
-            for name,tile_spec in self.index[area]["TILES"].items():
+            for name,tile_spec in self.index[area].items():
                 path = f"./data/tilesets/16x16/{area}/{name}{tile_spec['EXT']}"
-                self.index[area]["TILES"][name]["PATH"] = path
-                self.index[area]["TILES"][name]["TILEMAP"] = pygame.transform.scale_by(
+                self.index[area][name]["PATH"] = path
+                self.index[area][name]["IMAGE"] = pygame.transform.scale_by(
                     pygame.image.load(path).convert_alpha(), 
                     self.scale
                 )
@@ -84,7 +84,7 @@ class Tile_Ingester():
             
         for area in self.index:
             print("")
-            for tile in self.index[area]["TILES"]:
+            for tile in self.index[area]:
                 print(f"\t{area}.{tile}")
         
         return self

@@ -17,11 +17,14 @@ class Sprite():
     def get_frame(self): 
         return self.sprite[self._direction][self.current_frame]
         
-    def update(self, dt):
+    def update(self, dt, reset_frame=False):
         self.frame_time += dt
         if self.frame_time >= self.animation_speed:
             self.frame_time = 0
-            self._increment_frame()
+            if reset_frame:
+                self.current_frame = 0
+            else:
+                self._increment_frame()
             
     def _increment_frame(self):
         if self.reverse:

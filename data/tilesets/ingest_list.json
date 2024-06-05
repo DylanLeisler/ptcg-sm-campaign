@@ -1,91 +1,89 @@
 {
     "LOCATIONS": {
         "LAB": {
-            "TILES": {
-                "chair": {
-                    "TYPE": "OBJECT",
-                    "EXT": ".png",
-                    "COLLISION": true,
-                    "SHORT": null
-                },
-                "game_table": {
-                    "TYPE": "OBJECT",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "table"
-                },
-                "floor": {
-                    "TYPE": "FLOOR",
-                    "EXT": ".png",
-                    "COLLISION": true,
-                    "SHORT": null
-                },
-                "bottom_center": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "bt_cnt"
-                },
-                "bottom_floor": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "bt_flr"
-                },
-                "bottom_left": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "bt_lt"
-                },
-                "bottom_right": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "bt_rt"
-                },
-                "bottom_shadow": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": ""
-                },
-                "door_sideways_bottom": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "door_sw_bt"
-                },
-                "door_sideways": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "door_sw_fw"
-                },
-                "side_center": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "side_cnt"
-                },
-                "top_center": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "top_cnt"
-                },
-                "top_left": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "top_lt"
-                },
-                "top_right": {
-                    "TYPE": "WALL",
-                    "EXT": ".png",
-                    "COLLISION": false,
-                    "SHORT": "top_rt"
-                }
+            "chair": {
+                "TYPE": "OBJECT",
+                "EXT": ".png",
+                "COLLISION": true,
+                "SHORT": null
+            },
+            "game_table": {
+                "TYPE": "OBJECT",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "table"
+            },
+            "floor": {
+                "TYPE": "FLOOR",
+                "EXT": ".png",
+                "COLLISION": true,
+                "SHORT": null
+            },
+            "bottom_center": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "bt_cnt"
+            },
+            "bottom_floor": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "bt_flr"
+            },
+            "bottom_left": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "bt_lt"
+            },
+            "bottom_right": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "bt_rt"
+            },
+            "bottom_shadow": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": ""
+            },
+            "door_sideways_bottom": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "door_sw_bt"
+            },
+            "door_sideways": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "door_sw_fw"
+            },
+            "side_center": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "side_cnt"
+            },
+            "top_center": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "top_cnt"
+            },
+            "top_left": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "top_lt"
+            },
+            "top_right": {
+                "TYPE": "WALL",
+                "EXT": ".png",
+                "COLLISION": false,
+                "SHORT": "top_rt"
             }
         }
     }

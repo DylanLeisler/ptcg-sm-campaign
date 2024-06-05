@@ -55,7 +55,11 @@ class MapRenderer():
                 log.debug(tile)
                 log.debug(f"\tTILE_ID: {tile_id}\n\tROW_ID: {row_id}")
                 
-                self._render_tile(tilemap)
+                isSolid = False
+                if self.tile_sheet[self.area]["TILES"][tile]["TYPE"] == "WALL":
+                    isSolid = not isSolid
+                
+                self._render_tile(tilemap, collision_rect=isSolid)
                 log.debug(MapRenderer.OFFSET)
                 
                 offset = [False, False]
@@ -67,8 +71,14 @@ class MapRenderer():
                 
         return self   
     
-    def _render_tile(self, tile):
+    def _render_tile(self, tile, collision_rect=False):
         self.screen.blit(tile, (MapRenderer.OFFSET["x"], MapRenderer.OFFSET["y"]))
+        from main import wall_group
+        print(tile)
+        exit
+        if collision_rect:
+            wall_group.add(tile.get_rect())
+            
         return self
     
     def _adjust_offset(self, tile_dimensions, axis_reset) -> 'MapRenderer':

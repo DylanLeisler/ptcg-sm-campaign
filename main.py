@@ -1,3 +1,5 @@
+import inspect
+from typing import Dict, TypedDict
 from classes.card_manager import CardManager
 # from classes.deck import Deck
 from classes.image_downloader import Image_Downloader
@@ -7,46 +9,43 @@ from classes.graphics.overworld.sprite_map import SpriteMap
 from classes.graphics.overworld.sprite import Sprite
 import pygame
 
-#TODO: handle missing key exceptions
-# moveless_pokemon = [pokemon_card for pokemon_card in filter(lambda x: "attacks" not in x.keys(), pokemon_cards)]           
-
-SPRITE_MAP_PATH="data/overworld_sprites/alpha_sprite_map.png"
+# CONSTANTS
 
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
 
+SPRITE_MAP_PATH="data/overworld_sprites/alpha_sprite_map.png"
 TILE_SIZE = 16*4
 MAP_WIDTH, MAP_HEIGHT = 8, 6
 SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
 
+
+# Init
+
 pygame.init()
-
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Tile Map Game")
-
+pygame.display.set_caption("PTCG-SM-CAMPAIGN")
 clock = pygame.time.Clock()
 
 
-#map_renderer = Draw_Map()
-#map_renderer.load_tiles_by_location("lab")
+# Groups
 
-map_ingester = Tile_Ingester()
-# map_ingester.get_index()
-map_ingester.build_index()\
-            # .print_index()
+player_group = pygame.sprite.Group()
+wall_group = pygame.sprite.Group()
+floor_group = pygame.sprite.Group()
+object_group = pygame.sprite.Group()
+lab_group = pygame.sprite.Group()
 
-# Sample map layout: a list of strings or numbers indicating tiles
-# map_data = {"area": "LAB", 
-#             "specs": [
-#     ["top_left", "top_center", "top_center", "top_center", "top_right"],
-#     ["side_center", "bottom_center", "bottom_center", "bottom_center", "side_center"],
-#     ["side_center", "floor", "floor", "floor", "side_center"],
-#     ["side_center", "floor", "floor", "floor", "side_center"],
-#     ["bottom_left", "bottom_floor", "bottom_floor", "bottom_floor", "bottom_right"],
-#     ["bottom_center", "bottom_center", "bottom_center", "bottom_center", "bottom_center"],
-#     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
-# ]}
 
+
+## Pre-Loop Setup ##
+
+# Use instructions to ingest pngs
+lab_tiles = Tile_Ingester()\
+                    .build_index()\
+                    .get_index()
+
+# Visual definition of lab set up
 map_data = {"area": "LAB", 
             "specs": [
     ["top_left", "top_center", "top_center", "top_center", "top_center", "top_center", "top_center", "top_right"],
@@ -58,7 +57,44 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-map_renderer = MapRenderer(screen, map_ingester.get_index(), map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
+class AreaProps(TypedDict):
+    TYPE: str
+    EXT: str
+    COLLISION: bool
+    SHORT: str
+    PATH: str
+    IMAGE: pygame.Surface
+ 
+    
+class Area():
+    
+    def __init__(self, area_index: Dict[str, Dict[str, AreaProps]]):
+        self.area_name = list(area_index.keys())[0]
+        assert self.area_name == "LAB"
+        self.sprites = {}
+        self._ingest_tiles(area_index[self.area_name])
+        
+    def _ingest_tiles(self, tiles):
+        from classes.graphics.overworld import types as sprite_types_module
+        classes = [member for name, member in inspect.getmembers(sprite_types_module)
+            if inspect.isclass(member) and member.__module__ == sprite_types_module.__name__]
+        sprite_types = [(cls.__name__, cls) for cls in classes]
+        
+        for key,tile in tiles.items():
+            for sprite_type in sprite_types:
+                if tile["TYPE"] == sprite_type[0].upper():
+                    group = globals()[f"{sprite_type[0].lower()}_group"]
+                    new_sprite = sprite_type[1](tile["IMAGE"], (0,0), group)
+                    self.sprites[key] = new_sprite
+                    
+                    
+                
+        
+lab = Area(lab_tiles)
+print(lab.sprites)
+exit()
+
+map_renderer = MapRenderer(screen, lab_tiles, map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 transparent_color = (255, 127, 39)
 top_border = 34
@@ -84,15 +120,17 @@ player_sprite = Sprite(
         )
     )
 
+# player_group.add(player_sprite)
+
                 # Main game loop          
                 
 running = True
 while running:
-    dt = clock.tick(60)/1000
+    dt = clock.tick(60)/1000 # 60 frames per second
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        
+
     map_renderer.execute_instructions()
     
     key = pygame.key.get_pressed()
@@ -100,21 +138,29 @@ while running:
     if key[pygame.K_DOWN]: # down key
         player_sprite.direction = "forward"
         player_sprite.position[1] += dist # move down
+        player_sprite.update(dt)
     elif key[pygame.K_UP]: # up key
         player_sprite.direction = "backward"
         player_sprite.position[1] -= dist # move up
+        player_sprite.update(dt)
     elif key[pygame.K_RIGHT]: # right key
         player_sprite.direction = "right"
         player_sprite.position[0] += dist # move right
+        player_sprite.update(dt)
     elif key[pygame.K_LEFT]: # left key
         player_sprite.direction = "left"
         player_sprite.position[0] -= dist # move left
+        player_sprite.update(dt)
+    else:
+        player_sprite.update(dt, reset_frame=True)
        
         
-    player_sprite.update(dt)
     image = player_sprite.get_frame()
 
     screen.blit(image, player_sprite.position)
+    
+    if pygame.sprite.spritecollideany(player_sprite, wall_group):
+        print("Collision detected!")
             
     # Update the display
     pygame.display.flip()
