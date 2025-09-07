@@ -1,5 +1,4 @@
-# My girlfriend won't stop hassling me about how bad of an idea this is
-## So I'm switching to Godot. Consider this inactive for the time being.
+# I'm switching to Godot. Consider this inactive for the time being.
 ### The code is free to use and this project is not technically abandoned.
 ### Reach out with any questions or interest.
 
