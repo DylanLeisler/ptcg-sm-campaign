@@ -1,6 +1,7 @@
 from typing import Dict, List, Tuple
 import pygame
-from classes.graphics.logging import graphics_logger as log
+from ...utils.util_logging import graphics_logger as log
+#classes.utils.util_logging import graphics_logger as log
 
 log.setLevel("WARNING")
 
@@ -31,7 +32,7 @@ class MapRenderer():
             
             instructions (Dict[str, List[List[str]]]): The 'area' key should correspond with
             the directory the tiles are stored in. The 'specs' key is a list of rows, each
-            a list of columns; they directly corresponds with what will appear on the screen
+            a list of columns; they directly correspond with what will appear on the screen
             and in what order. Each value should be the targeted key under LOCATION.<area>.TILES. 
             Each key represents a different tile object.
             
@@ -51,23 +52,23 @@ class MapRenderer():
     def execute_instructions(self) -> 'MapRenderer':
         for row_id,row in enumerate(self.specs):
             for tile_id,tile in enumerate(row):
-                tilemap = self.tile_sheet[self.area]["TILES"][tile]["TILEMAP"]
+                tilemap = self.tile_sheet[self.area][tile]
                 log.debug(tile)
                 log.debug(f"\tTILE_ID: {tile_id}\n\tROW_ID: {row_id}")
                 
                 isSolid = False
-                if self.tile_sheet[self.area]["TILES"][tile]["TYPE"] == "WALL":
+                if self.tile_sheet[self.area][tile]["TYPE"] == "WALL":
                     isSolid = not isSolid
-                
-                self._render_tile(tilemap, collision_rect=isSolid)
+                self._render_tile(tilemap["IMAGE"], collision_rect=isSolid)
                 log.debug(MapRenderer.OFFSET)
                 
                 offset = [False, False]
                 if tile_id == (len(row) - 1):
                     offset[0] = True
                     if row_id == (len(self.specs) - 1):
-                        offset[1] = True  
-                self._adjust_offset(tilemap.get_size(), offset)
+                        offset[1] = True
+                print(tilemap)
+                self._adjust_offset(tilemap["IMAGE"].get_size(), offset)
                 
         return self   
     
@@ -75,9 +76,8 @@ class MapRenderer():
         self.screen.blit(tile, (MapRenderer.OFFSET["x"], MapRenderer.OFFSET["y"]))
         from main import wall_group
         print(tile)
-        exit
-        if collision_rect:
-            wall_group.add(tile.get_rect())
+        # if collision_rect:
+        #     wall_group.add(tile)
             
         return self
     

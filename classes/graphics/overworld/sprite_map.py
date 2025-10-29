@@ -1,5 +1,5 @@
 from typing import List
-from classes.graphics.logging import graphics_logger as log
+from classes.utils.util_logging import graphics_logger as log
 import pygame
 
  

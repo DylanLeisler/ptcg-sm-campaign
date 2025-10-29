@@ -2,15 +2,16 @@ import inspect
 from typing import Dict, TypedDict
 from classes.card_manager import CardManager
 # from classes.deck import Deck
-from classes.image_downloader import Image_Downloader
+from classes.characters.sprite import Sprite
+from classes.characters.entity import Entity
 from classes.graphics.overworld.map_renderer import MapRenderer
 from classes.graphics.tile_ingester import Tile_Ingester
 from classes.graphics.overworld.sprite_map import SpriteMap
-from classes.graphics.overworld.sprite import Sprite
+from classes.graphics.overworld.inanimate_sprite import InanimateSprite
+from classes.image_downloader import Image_Downloader
 import pygame
 
 # CONSTANTS
-
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
 
@@ -19,9 +20,10 @@ TILE_SIZE = 16*4
 MAP_WIDTH, MAP_HEIGHT = 8, 6
 SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
 
+INANIMATE_SPRITE_TYPES = ["wall", "floor", "object"]
+
 
 # Init
-
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("PTCG-SM-CAMPAIGN")
@@ -29,16 +31,9 @@ clock = pygame.time.Clock()
 
 
 # Groups
-
-player_group = pygame.sprite.Group()
-wall_group = pygame.sprite.Group()
-floor_group = pygame.sprite.Group()
-object_group = pygame.sprite.Group()
-lab_group = pygame.sprite.Group()
-
-
-
-## Pre-Loop Setup ##
+groups = {
+    group: pygame.sprite.Group() 
+    for group in ["entity", "player", *INANIMATE_SPRITE_TYPES, "lab"]}
 
 # Use instructions to ingest pngs
 lab_tiles = Tile_Ingester()\
@@ -57,7 +52,7 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-class AreaProps(TypedDict):
+class AreaProp(TypedDict):
     TYPE: str
     EXT: str
     COLLISION: bool
@@ -68,33 +63,56 @@ class AreaProps(TypedDict):
     
 class Area():
     
-    def __init__(self, area_index: Dict[str, Dict[str, AreaProps]]):
+    def __init__(self, area_index: Dict[str, Dict[str, AreaProp]]):
         self.area_name = list(area_index.keys())[0]
         assert self.area_name == "LAB"
-        self.sprites = {}
+        self.inanimate_sprites = {}
         self._ingest_tiles(area_index[self.area_name])
-        
+
     def _ingest_tiles(self, tiles):
-        from classes.graphics.overworld import types as sprite_types_module
-        classes = [member for name, member in inspect.getmembers(sprite_types_module)
-            if inspect.isclass(member) and member.__module__ == sprite_types_module.__name__]
-        sprite_types = [(cls.__name__, cls) for cls in classes]
+        """ Ingest all the tiles for the respective Area.
+        Loops through every tile k:v and calls internal methods _classify_sprites and _ingest_sprites
+
+        Args:
+            tiles (dict): Tiles from Tile_Ingester. 
+                          Key is item ("chair", "wall", etc.) and the value is the AreaProp
+        """
+        for key, tile in tiles.items():
+            new_sprite = (INANIMATE_SPRITE_TYPES[tile['TYPE']].lower(), InanimateSprite(tile["IMAGE"], (0,0)))
+            self._classify_sprites(*new_sprite)
+            self._ingest_sprites(key, new_sprite)
+      
+    def _classify_sprites(self, sprite_type, sprite):
+        groups[sprite_type].add(sprite)
         
-        for key,tile in tiles.items():
-            for sprite_type in sprite_types:
-                if tile["TYPE"] == sprite_type[0].upper():
-                    group = globals()[f"{sprite_type[0].lower()}_group"]
-                    new_sprite = sprite_type[1](tile["IMAGE"], (0,0), group)
-                    self.sprites[key] = new_sprite
+    def _ingest_sprites(self, item, sprite):
+        self.inanimate_sprites.setdefault(item, []).append(sprite[1])
+        
+    # def why__ingest_tiles(self, tiles):
+    #     from classes.graphics.overworld import inanimate_sprite as sprite_types_module
+    #     classes = [member for member in inspect.getmembers(sprite_types_module)
+    #         if inspect.isclass(member) and member.__module__ == sprite_types_module.__name__]
+    #     sprite_types = [(cls.__name__, cls) for cls in classes]
+        
+    #     for key,tile in tiles.items():
+    #         for sprite_type in sprite_types:
+    #             if tile["TYPE"] == sprite_type[0].upper():
+    #                 new_sprite = sprite_type[1](tile["IMAGE"], (0,0))
+    #                 globals()["groups"][f"{sprite_type[0].lower()}"].add(new_sprite)
+    #                 if key in self.inanimate_sprites:
+    #                     self.inanimate_sprites[key] += new_sprite
+    #                 else: 
+    #                     self.inanimate_sprites[key] = new_sprite
                     
                     
                 
         
 lab = Area(lab_tiles)
-print(lab.sprites)
-exit()
+# print(lab.sprites)
+
 
 map_renderer = MapRenderer(screen, lab_tiles, map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
 
 transparent_color = (255, 127, 39)
 top_border = 34
@@ -102,6 +120,10 @@ left_border = 9
 between_border = 1
 sprite_length = 16
 sprite_height = 16
+animated_sprite_coords = ([(0,0),(1,0),(2,0)],
+                         [(3,0),(4,0),(5,0)], 
+                         [(6,0),(7,0)], 
+                         [(8,0),(9,0)])
 
 sprite_handler = SpriteMap(SPRITE_MAP_PATH, 
                            transparent_color=transparent_color,
@@ -110,17 +132,13 @@ sprite_handler = SpriteMap(SPRITE_MAP_PATH,
                            top_border=top_border,
                            between_border=1)
 
-
+player_name = "Player"
 player_sprite = Sprite(
-    sprite_handler.get_animated_sprite(
-        [(0,0),(1,0),(2,0)],
-        [(3,0),(4,0),(5,0)], 
-        [(6,0),(7,0)], 
-        [(8,0),(9,0)]
-        )
+    sprite_handler.get_animated_sprite(*animated_sprite_coords)
     )
+player = Entity(player_name, player_sprite)
 
-# player_group.add(player_sprite)
+groups["player"].add(player)
 
                 # Main game loop          
                 
@@ -136,30 +154,30 @@ while running:
     key = pygame.key.get_pressed()
     dist = 2 # distance moved in 1 frame
     if key[pygame.K_DOWN]: # down key
-        player_sprite.direction = "forward"
-        player_sprite.position[1] += dist # move down
-        player_sprite.update(dt)
+        player.direction = "forward"
+        player.position[1] += dist # move down
+        player.update(dt)
     elif key[pygame.K_UP]: # up key
-        player_sprite.direction = "backward"
-        player_sprite.position[1] -= dist # move up
-        player_sprite.update(dt)
+        player.direction = "backward"
+        player.position[1] -= dist # move up
+        player.update(dt)
     elif key[pygame.K_RIGHT]: # right key
-        player_sprite.direction = "right"
-        player_sprite.position[0] += dist # move right
-        player_sprite.update(dt)
+        player.direction = "right"
+        player.position[0] += dist # move right
+        player.update(dt)
     elif key[pygame.K_LEFT]: # left key
-        player_sprite.direction = "left"
-        player_sprite.position[0] -= dist # move left
-        player_sprite.update(dt)
+        player.direction = "left"
+        player.position[0] -= dist # move left
+        player.update(dt)
     else:
-        player_sprite.update(dt, reset_frame=True)
+        player.update(dt, reset_frame=True)
        
         
-    image = player_sprite.get_frame()
+    image = player.get_frame()
 
-    screen.blit(image, player_sprite.position)
+    screen.blit(image, player.position)
     
-    if pygame.sprite.spritecollideany(player_sprite, wall_group):
+    if pygame.sprite.spritecollideany(player, wall_group):
         print("Collision detected!")
             
     # Update the display

@@ -1,6 +1,6 @@
 from time import sleep
-from classes.graphics.logging import graphics_logger as log
-import pygame
+from classes.utils.util_logging import graphics_logger as log
+import pygame.sprite
 
 
 class Sprite():
