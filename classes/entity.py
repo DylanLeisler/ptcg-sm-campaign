@@ -1,12 +1,13 @@
 import pygame
-from .sprite import Sprite
+from .graphics.sprite import AnimatedSprite
 
 
-# Refer to pygame Sprites as pygame.sprite.Sprite exclusively. Just Sprite is a custom class
+# Refer to pygame Sprites as pygame.sprite.Sprite exclusively. Just 'Sprite' is a custom class for visual representation
+# An entity is anything with a Sprite(I.E. Inanimates and Characters)
 class Entity(pygame.sprite.Sprite):
     
-    def __init__(self, name, sprite: Sprite):
-        self.name = name
+    def __init__(self, sprite: AnimatedSprite):
+        pygame.sprite.Sprite.__init__(self)
         self.sprite = sprite
     
     # Property + setter redirects player.direction calls to player.sprite.direction
@@ -25,11 +26,24 @@ class Entity(pygame.sprite.Sprite):
     # The list should mutate fine, but remember the setter will *not* be called when indexing. 
     @property
     def position(self):
-        return self.sprite.position
+        return self.sprite.rect.topleft
         
     @position.setter
     def position(self, new_pos):
-        self.sprite.position = new_pos
+        self.sprite.rect.topleft = new_pos
         
-    def update(self, delta_t):
-        self.sprite.update(delta_t)
+    def update(self, delta_t, *args, **kwargs):
+        self.sprite.update(delta_t, *args, **kwargs)
+        
+    def get_frame(self, *args, **kwargs):
+        return self.sprite.get_frame(*args, **kwargs)
+    
+    @property
+    def rect(self):
+        return self.sprite.rect
+    
+    @rect.setter
+    def rect(self, new_rect):
+        self.sprite.rect = new_rect
+
+   

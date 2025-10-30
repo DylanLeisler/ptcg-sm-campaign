@@ -51,7 +51,7 @@ class Tile_Ingester():
         return self
     
     def _isIndex(self, no_build=False) -> None:
-        """Checks for the existence of self.index. Attemps to build if not found.
+        """Checks for the existence of self.index. Attempts to build if not found.
         Make into decorator if this sees a lot of usage
         
         Args:

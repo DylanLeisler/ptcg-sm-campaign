@@ -1,15 +1,14 @@
-import inspect
-from typing import Dict, TypedDict
 from classes.card_manager import CardManager
 # from classes.deck import Deck
-from classes.characters.sprite import Sprite
-from classes.characters.entity import Entity
-from classes.graphics.overworld.map_renderer import MapRenderer
+from classes.characters.character import Character
+from classes.graphics.sprite import AnimatedSprite
+from classes.graphics.overworld.area import Area
 from classes.graphics.tile_ingester import Tile_Ingester
 from classes.graphics.overworld.sprite_map import SpriteMap
-from classes.graphics.overworld.inanimate_sprite import InanimateSprite
+from classes.graphics.overworld.inanimate import Inanimate
 from classes.image_downloader import Image_Downloader
 import pygame
+
 
 # CONSTANTS
 CARD_PATH = "data/cards/pokemon/sm10.json"
@@ -20,20 +19,16 @@ TILE_SIZE = 16*4
 MAP_WIDTH, MAP_HEIGHT = 8, 6
 SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
 
-INANIMATE_SPRITE_TYPES = ["wall", "floor", "object"]
-
 
 # Init
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("PTCG-SM-CAMPAIGN")
 clock = pygame.time.Clock()
-
+INANIMATE_TYPES = ["wall", "object", "floor"]
 
 # Groups
-groups = {
-    group: pygame.sprite.Group() 
-    for group in ["entity", "player", *INANIMATE_SPRITE_TYPES, "lab"]}
+groups = {name: pygame.sprite.Group() for name in ["player", *INANIMATE_TYPES]}
 
 # Use instructions to ingest pngs
 lab_tiles = Tile_Ingester()\
@@ -52,66 +47,7 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-class AreaProp(TypedDict):
-    TYPE: str
-    EXT: str
-    COLLISION: bool
-    SHORT: str
-    PATH: str
-    IMAGE: pygame.Surface
- 
-    
-class Area():
-    
-    def __init__(self, area_index: Dict[str, Dict[str, AreaProp]]):
-        self.area_name = list(area_index.keys())[0]
-        assert self.area_name == "LAB"
-        self.inanimate_sprites = {}
-        self._ingest_tiles(area_index[self.area_name])
-
-    def _ingest_tiles(self, tiles):
-        """ Ingest all the tiles for the respective Area.
-        Loops through every tile k:v and calls internal methods _classify_sprites and _ingest_sprites
-
-        Args:
-            tiles (dict): Tiles from Tile_Ingester. 
-                          Key is item ("chair", "wall", etc.) and the value is the AreaProp
-        """
-        for key, tile in tiles.items():
-            new_sprite = (INANIMATE_SPRITE_TYPES[tile['TYPE']].lower(), InanimateSprite(tile["IMAGE"], (0,0)))
-            self._classify_sprites(*new_sprite)
-            self._ingest_sprites(key, new_sprite)
-      
-    def _classify_sprites(self, sprite_type, sprite):
-        groups[sprite_type].add(sprite)
-        
-    def _ingest_sprites(self, item, sprite):
-        self.inanimate_sprites.setdefault(item, []).append(sprite[1])
-        
-    # def why__ingest_tiles(self, tiles):
-    #     from classes.graphics.overworld import inanimate_sprite as sprite_types_module
-    #     classes = [member for member in inspect.getmembers(sprite_types_module)
-    #         if inspect.isclass(member) and member.__module__ == sprite_types_module.__name__]
-    #     sprite_types = [(cls.__name__, cls) for cls in classes]
-        
-    #     for key,tile in tiles.items():
-    #         for sprite_type in sprite_types:
-    #             if tile["TYPE"] == sprite_type[0].upper():
-    #                 new_sprite = sprite_type[1](tile["IMAGE"], (0,0))
-    #                 globals()["groups"][f"{sprite_type[0].lower()}"].add(new_sprite)
-    #                 if key in self.inanimate_sprites:
-    #                     self.inanimate_sprites[key] += new_sprite
-    #                 else: 
-    #                     self.inanimate_sprites[key] = new_sprite
-                    
-                    
-                
-        
-lab = Area(lab_tiles)
-# print(lab.sprites)
-
-
-map_renderer = MapRenderer(screen, lab_tiles, map_data, (SCREEN_WIDTH, SCREEN_HEIGHT))
+lab = Area(screen, lab_tiles, map_data, (SCREEN_WIDTH, SCREEN_HEIGHT), groups)
 
 
 transparent_color = (255, 127, 39)
@@ -133,147 +69,158 @@ sprite_handler = SpriteMap(SPRITE_MAP_PATH,
                            between_border=1)
 
 player_name = "Player"
-player_sprite = Sprite(
-    sprite_handler.get_animated_sprite(*animated_sprite_coords)
-    )
-player = Entity(player_name, player_sprite)
+player_sprite = AnimatedSprite(
+    sprite_handler.get_animated_sprite(*animated_sprite_coords),
+    [100, 100])
+player = Character(player_sprite, player_name)
+# player.rect.update(player.rect.left, player.rect.top, player.rect.width, player.rect.height)
 
 groups["player"].add(player)
 
                 # Main game loop          
-                
-running = True
-while running:
-    dt = clock.tick(60)/1000 # 60 frames per second
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+def main():             
+    running = True
+    while running:
+        dt = clock.tick(60)/1000 # 60 frames per second
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
 
-    map_renderer.execute_instructions()
-    
-    key = pygame.key.get_pressed()
-    dist = 2 # distance moved in 1 frame
-    if key[pygame.K_DOWN]: # down key
-        player.direction = "forward"
-        player.position[1] += dist # move down
-        player.update(dt)
-    elif key[pygame.K_UP]: # up key
-        player.direction = "backward"
-        player.position[1] -= dist # move up
-        player.update(dt)
-    elif key[pygame.K_RIGHT]: # right key
-        player.direction = "right"
-        player.position[0] += dist # move right
-        player.update(dt)
-    elif key[pygame.K_LEFT]: # left key
-        player.direction = "left"
-        player.position[0] -= dist # move left
-        player.update(dt)
-    else:
-        player.update(dt, reset_frame=True)
-       
+        render_map(lab)
         
-    image = player.get_frame()
-
-    screen.blit(image, player.position)
-    
-    if pygame.sprite.spritecollideany(player, wall_group):
-        print("Collision detected!")
+        key = pygame.key.get_pressed()
+        dist = 2 # distance moved in 1 frame
+        if key[pygame.K_DOWN]: # down key
+            player.direction = "forward"
+            player.position = (player.position[0], player.position[1] + dist) # move down
+            player.update(dt)
+        elif key[pygame.K_UP]: # up key
+            player.direction = "backward"
+            player.position = (player.position[0], player.position[1] - dist) # move up
+            player.update(dt)
+        elif key[pygame.K_RIGHT]: # right key
+            player.direction = "right"
+            player.position = (player.position[0] + dist, player.position[1]) # move right
+            player.update(dt)
+        elif key[pygame.K_LEFT]: # left key
+            player.direction = "left"
+            player.position = (player.position[0] - dist, player.position[1]) # move left
+            player.update(dt)
+        else:
+            player.update(dt, reset_frame=True)
+        
             
-    # Update the display
-    pygame.display.flip()
-    
+        image = player.get_frame()
 
-# Clean up
-pygame.quit()
+        screen.blit(image, player.position)
+        
+        if (s := pygame.sprite.spritecollideany(player, groups["wall"])) is not None: # type: ignore
+            print(f"Collision detected between: {player} and {s}\n\tPlayer coordinates at {player.position}\n\tSprite coordinates at {s.position}")
+                
+        # Update the display
+        pygame.display.flip()
+        
 
-exit()
-
-# Main game loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            
-
-    # Draw the tile map
-    TOTAL_OFF_SET = {"h": 0, "v": 0}
-    for row_index, row in enumerate(map_data):
-        for col_index, tile in enumerate(row):
-            tile_key = "WALLS"
-            key = map_data[row_index][col_index]
-            if key == "floor":
-                tile_key = "FLOORS"
-            image = map_renderer.TILES[tile_key][key]
-            screen.blit(image, (TOTAL_OFF_SET["h"], TOTAL_OFF_SET["v"]))
-            image_width, image_height = image.get_size()
-            TOTAL_OFF_SET["h"] += image_width
-            if col_index == (len(row)-1):
-                TOTAL_OFF_SET["v"] += image_height
-                TOTAL_OFF_SET["h"] = 0
-
-    # Update the display
-    pygame.display.flip()
-
-# Clean up
-pygame.quit()
-
-# print(map_renderer.TILES)
-
-exit()
+    # Clean up
+    pygame.quit()
 
 
-cm = CardManager(CARD_PATH)
-# cm.change_set(BASE_SET)
-cm_2 = CardManager(BASE_SET)
-
-cm = cm + cm_2
-
-return_raw_card_data = False
-
-testing_cards = cm.get_cards_by_supertype("Pokemon", raw=False)
-
-# for t_card in testing_cards:
-#     print()
-#     print(t_card.name)
+def render_map(area: Area):
+    inanimates = area.get_inanimates()
+    for inanimate in inanimates:
+        screen.blit(inanimate.sprite.sprite, inanimate.position) 
 
 
-# Deck Obj Testing
-pokemon_cards = cm.get_cards_by_supertype("Pokemon", raw=return_raw_card_data)
-energy_cards = cm.get_cards_by_supertype("Energy", raw=return_raw_card_data)
-trainer_cards = cm.get_cards_by_supertype("Trainer", raw=return_raw_card_data)
+def hidden():
+    exit()
+    # Main game loop
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                
 
-downloader = Image_Downloader()
+        # Draw the tile map
+        TOTAL_OFF_SET = {"h": 0, "v": 0}
+        for row_index, row in enumerate(map_data):
+            for col_index, tile in enumerate(row):
+                tile_key = "WALLS"
+                key = map_data[row_index][col_index]
+                if key == "floor":
+                    tile_key = "FLOORS"
+                image = map_renderer.TILES[tile_key][key]
+                screen.blit(image, (TOTAL_OFF_SET["h"], TOTAL_OFF_SET["v"]))
+                image_width, image_height = image.get_size()
+                TOTAL_OFF_SET["h"] += image_width
+                if col_index == (len(row)-1):
+                    TOTAL_OFF_SET["v"] += image_height
+                    TOTAL_OFF_SET["h"] = 0
 
-downloader.download_images(pokemon_cards)
-downloader.download_image(energy_cards)
+        # Update the display
+        pygame.display.flip()
+
+    # Clean up
+    pygame.quit()
+
+    # print(map_renderer.TILES)
+
+    exit()
 
 
-###
+    cm = CardManager(CARD_PATH)
+    # cm.change_set(BASE_SET)
+    cm_2 = CardManager(BASE_SET)
 
-downloader = Image_Downloader()
-url = pokemon_cards[0].image
-name = "IMG-" + pokemon_cards[0].card_id + "-" + url[url.rfind("/")+1:]
-downloader.download_image(url, name)
+    cm = cm + cm_2
 
-exit()
+    return_raw_card_data = False
 
-NUM_OF_TRAINER_CARDS_NEEDED = 6
-NUM_OF_ENERGY_CARDS_NEEDED = 20
-NUM_OF_POKEMON_CARDS_NEEDED = 14
-TOTAL_NUM_OF_CARDS_NEEDED = NUM_OF_ENERGY_CARDS_NEEDED + NUM_OF_POKEMON_CARDS_NEEDED + NUM_OF_TRAINER_CARDS_NEEDED
+    testing_cards = cm.get_cards_by_supertype("Pokemon", raw=False)
 
-num_of_trainer_cards = len(trainer_cards)
-num_of_energy_cards = len(energy_cards)
-num_of_pokemon_cards = len(pokemon_cards)
+    # for t_card in testing_cards:
+    #     print()
+    #     print(t_card.name)
 
 
-num_of_energy_cards_short = NUM_OF_ENERGY_CARDS_NEEDED - num_of_energy_cards
+    # Deck Obj Testing
+    pokemon_cards = cm.get_cards_by_supertype("Pokemon", raw=return_raw_card_data)
+    energy_cards = cm.get_cards_by_supertype("Energy", raw=return_raw_card_data)
+    trainer_cards = cm.get_cards_by_supertype("Trainer", raw=return_raw_card_data)
 
-my_deck = Deck(pokemon_cards[0:NUM_OF_POKEMON_CARDS_NEEDED+num_of_energy_cards_short] + 
-               energy_cards[0:NUM_OF_ENERGY_CARDS_NEEDED] + 
-               trainer_cards[0:NUM_OF_TRAINER_CARDS_NEEDED])
-# my_deck.display_deck()
+    downloader = Image_Downloader()
 
-print(my_deck)
+    downloader.download_images(pokemon_cards)
+    downloader.download_image(energy_cards)
+
+
+    ###
+
+    downloader = Image_Downloader()
+    url = pokemon_cards[0].image
+    name = "IMG-" + pokemon_cards[0].card_id + "-" + url[url.rfind("/")+1:]
+    downloader.download_image(url, name)
+
+    exit()
+
+    NUM_OF_TRAINER_CARDS_NEEDED = 6
+    NUM_OF_ENERGY_CARDS_NEEDED = 20
+    NUM_OF_POKEMON_CARDS_NEEDED = 14
+    TOTAL_NUM_OF_CARDS_NEEDED = NUM_OF_ENERGY_CARDS_NEEDED + NUM_OF_POKEMON_CARDS_NEEDED + NUM_OF_TRAINER_CARDS_NEEDED
+
+    num_of_trainer_cards = len(trainer_cards)
+    num_of_energy_cards = len(energy_cards)
+    num_of_pokemon_cards = len(pokemon_cards)
+
+
+    num_of_energy_cards_short = NUM_OF_ENERGY_CARDS_NEEDED - num_of_energy_cards
+
+    my_deck = Deck(pokemon_cards[0:NUM_OF_POKEMON_CARDS_NEEDED+num_of_energy_cards_short] + 
+                energy_cards[0:NUM_OF_ENERGY_CARDS_NEEDED] + 
+                trainer_cards[0:NUM_OF_TRAINER_CARDS_NEEDED])
+    # my_deck.display_deck()
+
+    print(my_deck)
+
+if __name__ == "__main__":
+    main()
