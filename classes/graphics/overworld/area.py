@@ -79,7 +79,6 @@ class Area():
                 image = tiles[col]["IMAGE"]
                 new_sprite = Inanimate(image, 
                                        (Area.OFFSET["x"], Area.OFFSET["y"])) # type: ignore
-                new_sprite.position = new_sprite.sprite.position
                 self.inanimates.append(new_sprite)
                 self.add_sprite_to_group(tiles[col]["TYPE"].lower(), new_sprite)
                 offset = [False, False]

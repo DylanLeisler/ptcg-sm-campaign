@@ -39,7 +39,7 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-                # Main game loop          
+# Main game loop          
 def main(): 
 
     # Groups
@@ -55,7 +55,11 @@ def main():
                          GC.BETWEEN_BORDER,
                          groups)
     
-    last_movement_key = None
+    # TODO: Incoporate player collision rect changes directly into player class
+    crop = player.rect.height // 2
+    player.collision_rect.height -= crop
+    player.collision_rect.y += crop
+    
     key = None            
     running = True
     while running:
@@ -72,23 +76,38 @@ def main():
         movement_keys = [pygame.K_UP, pygame.K_DOWN, pygame.K_RIGHT, pygame.K_LEFT]
         movement_keys_pressed =  [k for k in movement_keys if key[k]]
         num_movement_keys_pressed = len(movement_keys_pressed)
-
+        moved_this_frame = False
+        
         if num_movement_keys_pressed > 0:
             if num_movement_keys_pressed > 1:
                 for pressed in movement_keys_pressed:
                     if pressed == last_movement_key:
                         continue
                     else:
+                        moved_this_frame = True
                         player.move(pressed, *ctx)
                         break
             else:
                 last_movement_key = movement_keys_pressed[0]
+                moved_this_frame = True
                 player.move(movement_keys_pressed[0], *ctx)
     
+        if not moved_this_frame:
+            player.update(dt, reset_frame=True)
             
         image = player.get_frame()
 
-        screen.blit(image, player.position)
+        screen.blit(image, player.visual_position)
+        # print(player.visual_position)
+        # print(player.collision_position)
+        
+        collision_layer = pygame.Surface((player.collision_rect.width, player.collision_rect.height), pygame.SRCALPHA)
+        non_layer = pygame.Surface((player.rect.width, player.rect.height), pygame.SRCALPHA)
+        pygame.draw.rect(collision_layer, (255, 0, 0, 150), collision_layer.get_rect())
+        pygame.draw.rect(non_layer, (0, 255, 0, 75), non_layer.get_rect())
+        
+        screen.blit(collision_layer, (player.collision_rect.x, player.collision_rect.y))
+        screen.blit(non_layer, (player.rect.x, player.rect.y))
                 
         # Update the display
         pygame.display.flip()
@@ -106,17 +125,14 @@ def make_player(path, alpha, dimensions, left_border, top_border, between_border
                             between_border=between_border)
 
     player_name = "Player"
-    player_sprite = AnimatedSprite(
-        sprite_handler.get_animated_sprite(*animated_sprite_coords),
-        [100, 100])
+    player_sprite = AnimatedSprite(sprite_handler.get_animated_sprite(*animated_sprite_coords))
     return Player(player_sprite, player_name).add_to_group(groups)
-    # player.rect.update(player.rect.left, player.rect.top, player.rect.width, player.rect.height)
 
 
 def render_map(area: Area):
     inanimates = area.get_inanimates()
     for inanimate in inanimates:
-        screen.blit(inanimate.image, inanimate.position) 
+        screen.blit(inanimate.image, inanimate.visual_position) 
 
 
 def hidden():

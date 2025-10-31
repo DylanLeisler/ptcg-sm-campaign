@@ -6,44 +6,44 @@ class VisualSprite():
     
     def __init__(self, 
                  sprite_surface: pygame.Surface | dict, 
-                 position: list[int], 
-                 sprite_dimensions: pygame.rect.Rect | tuple | None = None,
+                 position: list[int] = [0, 0], 
                  direction: str = "forward"):
         self.sprite = sprite_surface
         self._direction = direction
-        self.position = position
         
-        if isinstance(sprite_dimensions, pygame.rect.Rect):
-            self.rect = sprite_dimensions
-        elif isinstance(sprite_dimensions, tuple):
-            self.rect = pygame.rect.Rect(*position, *sprite_dimensions)
-        else:
-            if isinstance(sprite_surface, pygame.Surface):
-                self.rect = sprite_surface.get_rect()
+        if isinstance(sprite_surface, pygame.Surface):
+            rect = sprite_surface.get_rect()
+            self.rect = pygame.rect.Rect(*position, rect.width, rect.height)
+        # elif isinstance(sprite_dimensions, tuple):
+        #     self.rect = pygame.rect.Rect(*position, *sprite_dimensions)
+        elif isinstance(sprite_surface, dict):
+            rect = sprite_surface[next(iter(sprite_surface))][0].get_rect()
+            self.rect = pygame.rect.Rect(*position, rect.width, rect.height)
+            
+        # self.position = pygame.rect.Rect(*position, self.rect.width, self.rect.height)
+            
+    @property
+    def position(self):
+        return self.rect.topleft
+    
+    @position.setter
+    def position(self, new_pos):
+        self.rect.move_ip(*new_pos)
                 
         
 
 class AnimatedSprite(VisualSprite):
     
     def __init__(self, 
-                 sprite_surfaces: dict[str, list[pygame.Surface]], 
-                 position: list[int, int],  
-                 sprite_dimensions: pygame.rect.Rect | tuple | None = None,
+                 sprite_surface: dict[str, list[pygame.Surface]], 
+                 position = [0, 0],  
                  direction: str = "forward",
                  animation_speed: float = 0.2):
-        super().__init__(sprite_surfaces, position, sprite_dimensions, direction)   
+        super().__init__(sprite_surface, position, direction)   
         self.current_frame = 0
         self.frame_time = 0
         self.animation_speed = animation_speed
         self.reverse = 1
-        
-        if isinstance(sprite_dimensions, pygame.rect.Rect):
-            self.rect = sprite_dimensions
-        elif isinstance(sprite_dimensions, tuple):
-            self.rect = pygame.rect.Rect(*position, *sprite_dimensions)
-        else:
-            if isinstance(sprite_surfaces, dict):
-                self.rect = sprite_surfaces[next(iter(sprite_surfaces))][0].get_rect()
         
     def get_frame(self): 
         return self.sprite[self._direction][self.current_frame]

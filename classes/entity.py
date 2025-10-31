@@ -1,18 +1,21 @@
 from typing import Self
 import pygame
-from .graphics.sprite import AnimatedSprite
+from .graphics.sprite import AnimatedSprite, VisualSprite
 
 
-# Refer to pygame Sprites as pygame.sprite.Sprite exclusively. Just 'Sprite' is a custom class for visual representation
-# An entity is anything with a Sprite(I.E. Inanimates and Characters)
+
+# An entity is anything with a sprite (I.E. Inanimates and Characters)
 class Entity(pygame.sprite.Sprite):
     
-    def __init__(self, sprite: AnimatedSprite):
+    def __init__(self, sprite: AnimatedSprite | VisualSprite):
         pygame.sprite.Sprite.__init__(self)
         self.sprite = sprite
-    
-    # Property + setter redirects player.direction calls to player.sprite.direction
-    # Only one source of truth + sprite has special setter instructions
+        if not isinstance(self.sprite.rect, pygame.rect.Rect):
+            raise Exception(f"got {type(self.sprite.rect)}")
+        self.collision_rect = self.sprite.rect.copy()
+        if not isinstance(self.collision_rect, pygame.rect.Rect):
+            raise Exception(f"got2 {type(self.collision_rect)}")
+
     @property
     def direction(self):
         return self.sprite.direction
@@ -21,17 +24,31 @@ class Entity(pygame.sprite.Sprite):
     def direction(self, cardinal_direction):
         self.sprite.direction = cardinal_direction
 
-    # When assigning to entity.position, it will call the setter.
-    # However, when assigning to entity.position[n], this will actually only call the getter,
-    #  which will return a reference. 
-    # The list should mutate fine, but remember the setter will *not* be called when indexing. 
+    @property
+    def collision_position(self):
+        return self.collision_rect.topleft
+        
+    @collision_position.setter
+    def collision_position(self, new_pos):
+        # self.sprite.rect.move(*new_pos)
+        self.collision_rect.move_ip(*new_pos)
+        
+    @property
+    def visual_position(self):
+        return self.sprite.position
+    
+    @visual_position.setter
+    def visual_position(self, new_pos):
+        self.sprite.position = new_pos
+        
     @property
     def position(self):
-        return self.sprite.rect.topleft
-        
+        return self.visual_position
+    
     @position.setter
     def position(self, new_pos):
-        self.sprite.rect.topleft = new_pos
+        self.visual_position = new_pos
+        self.collision_position = new_pos
         
     def update(self, delta_t, *args, **kwargs):
         self.sprite.update(delta_t, *args, **kwargs)
@@ -61,7 +78,7 @@ class Entity(pygame.sprite.Sprite):
     
     def will_collide(self, dx, dy, groups):
         # Make a light, dynamic class that has the rect property for pygame's sprite.spritecollideany func.
-        future = type("future_position", (), {"rect": self.rect.move(dx, dy)})()
+        future = type("future_position", (), {"rect": self.collision_rect.move(dx, dy)})()
         return self.is_colliding(groups, future)
         
     def is_colliding(self, groups, mover=None):

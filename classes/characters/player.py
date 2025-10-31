@@ -9,8 +9,8 @@ class Player(Character):
     DISTANCE_PER_FRAME = GC.DEFAULT_MOVEMENT_DISTANCE_PER_FRAME
     
     def __init__(self, sprite, name, starting_position=STARTING_POSITION):
-        super().__init__(sprite, name)
-        self.position = starting_position
+        super().__init__(sprite, name, starting_position=starting_position)
+        
 
     # backward goes left and right goes down
     # dist is distance moved per frame
@@ -38,7 +38,6 @@ class Player(Character):
         if self.will_collide(dx, dy, groups):
             self.update(dt, reset_frame=True)
             return False  
-        print(dx, dy)
-        self.position = (self.position[0] + dx, self.position[1] + dy)
+        self.position = (dx, dy)
         self.update(dt)
         return True

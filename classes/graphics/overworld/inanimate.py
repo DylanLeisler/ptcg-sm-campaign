@@ -8,8 +8,7 @@ from ..sprite import VisualSprite
 class Inanimate(Entity):
     
     def __init__(self, image: pygame.Surface, position: list[int]):
-        pygame.sprite.Sprite.__init__(self)
-        self.sprite = VisualSprite(image, position)
+        super().__init__(VisualSprite(image, position))
         
         
     def __str__(self):
