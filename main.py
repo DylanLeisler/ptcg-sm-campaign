@@ -1,34 +1,26 @@
 from classes.card_manager import CardManager
 # from classes.deck import Deck
-from classes.characters.character import Character
+from classes.characters.player import Player
 from classes.graphics.sprite import AnimatedSprite
 from classes.graphics.overworld.area import Area
 from classes.graphics.tile_ingester import Tile_Ingester
 from classes.graphics.overworld.sprite_map import SpriteMap
 from classes.graphics.overworld.inanimate import Inanimate
 from classes.image_downloader import Image_Downloader
+from game_config import GameConfig as GC
 import pygame
 
 
-# CONSTANTS
+# CONSTANTS FOR TESTING
 CARD_PATH = "data/cards/pokemon/sm10.json"
 BASE_SET = "data/cards/sets/base1.json"
 
-SPRITE_MAP_PATH="data/overworld_sprites/alpha_sprite_map.png"
-TILE_SIZE = 16*4
-MAP_WIDTH, MAP_HEIGHT = 8, 6
-SCREEN_WIDTH, SCREEN_HEIGHT = MAP_WIDTH * TILE_SIZE, MAP_HEIGHT * TILE_SIZE
-
-
 # Init
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((GC.SCREEN_WIDTH, GC.SCREEN_HEIGHT))
 pygame.display.set_caption("PTCG-SM-CAMPAIGN")
 clock = pygame.time.Clock()
 INANIMATE_TYPES = ["wall", "object", "floor"]
-
-# Groups
-groups = {name: pygame.sprite.Group() for name in ["player", *INANIMATE_TYPES]}
 
 # Use instructions to ingest pngs
 lab_tiles = Tile_Ingester()\
@@ -47,38 +39,24 @@ map_data = {"area": "LAB",
     ["bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow", "bottom_shadow"]
 ]}
 
-lab = Area(screen, lab_tiles, map_data, (SCREEN_WIDTH, SCREEN_HEIGHT), groups)
-
-
-transparent_color = (255, 127, 39)
-top_border = 34
-left_border = 9
-between_border = 1
-sprite_length = 16
-sprite_height = 16
-animated_sprite_coords = ([(0,0),(1,0),(2,0)],
-                         [(3,0),(4,0),(5,0)], 
-                         [(6,0),(7,0)], 
-                         [(8,0),(9,0)])
-
-sprite_handler = SpriteMap(SPRITE_MAP_PATH, 
-                           transparent_color=transparent_color,
-                           sprite_dimensions=(sprite_length, sprite_height),
-                           left_border=left_border, 
-                           top_border=top_border,
-                           between_border=1)
-
-player_name = "Player"
-player_sprite = AnimatedSprite(
-    sprite_handler.get_animated_sprite(*animated_sprite_coords),
-    [100, 100])
-player = Character(player_sprite, player_name)
-# player.rect.update(player.rect.left, player.rect.top, player.rect.width, player.rect.height)
-
-groups["player"].add(player)
-
                 # Main game loop          
-def main():             
+def main(): 
+
+    # Groups
+    groups = {name: pygame.sprite.Group() for name in ["player", *INANIMATE_TYPES]}
+    
+    lab = Area(screen, lab_tiles, map_data, (GC.SCREEN_WIDTH, GC.SCREEN_HEIGHT), groups)
+    
+    player = make_player(GC.SPRITE_MAP_PATH, 
+                         GC.ALPHA_COLOR_KEY,
+                         (GC.SPRITE_LENGTH, GC.SPRITE_HEIGHT),
+                         GC.LEFT_BORDER, 
+                         GC.TOP_BORDER,
+                         GC.BETWEEN_BORDER,
+                         groups)
+    
+    last_movement_key = None
+    key = None            
     running = True
     while running:
         dt = clock.tick(60)/1000 # 60 frames per second
@@ -87,35 +65,30 @@ def main():
                 running = False
 
         render_map(lab)
-        
+         
+        # TODO: Replace temporary implementation of last-key-wins movement up to two keys pressed with stack-based method
         key = pygame.key.get_pressed()
-        dist = 2 # distance moved in 1 frame
-        if key[pygame.K_DOWN]: # down key
-            player.direction = "forward"
-            player.position = (player.position[0], player.position[1] + dist) # move down
-            player.update(dt)
-        elif key[pygame.K_UP]: # up key
-            player.direction = "backward"
-            player.position = (player.position[0], player.position[1] - dist) # move up
-            player.update(dt)
-        elif key[pygame.K_RIGHT]: # right key
-            player.direction = "right"
-            player.position = (player.position[0] + dist, player.position[1]) # move right
-            player.update(dt)
-        elif key[pygame.K_LEFT]: # left key
-            player.direction = "left"
-            player.position = (player.position[0] - dist, player.position[1]) # move left
-            player.update(dt)
-        else:
-            player.update(dt, reset_frame=True)
-        
+        ctx = (dt, groups)
+        movement_keys = [pygame.K_UP, pygame.K_DOWN, pygame.K_RIGHT, pygame.K_LEFT]
+        movement_keys_pressed =  [k for k in movement_keys if key[k]]
+        num_movement_keys_pressed = len(movement_keys_pressed)
+
+        if num_movement_keys_pressed > 0:
+            if num_movement_keys_pressed > 1:
+                for pressed in movement_keys_pressed:
+                    if pressed == last_movement_key:
+                        continue
+                    else:
+                        player.move(pressed, *ctx)
+                        break
+            else:
+                last_movement_key = movement_keys_pressed[0]
+                player.move(movement_keys_pressed[0], *ctx)
+    
             
         image = player.get_frame()
 
         screen.blit(image, player.position)
-        
-        if (s := pygame.sprite.spritecollideany(player, groups["wall"])) is not None: # type: ignore
-            print(f"Collision detected between: {player} and {s}\n\tPlayer coordinates at {player.position}\n\tSprite coordinates at {s.position}")
                 
         # Update the display
         pygame.display.flip()
@@ -124,11 +97,26 @@ def main():
     # Clean up
     pygame.quit()
 
+def make_player(path, alpha, dimensions, left_border, top_border, between_border, groups, animated_sprite_coords=GC.BASIC_ANIMATED_SPRITE_COORDS):
+    sprite_handler = SpriteMap(path, 
+                            transparent_color=alpha,
+                            sprite_dimensions=dimensions,
+                            left_border=left_border, 
+                            top_border=top_border,
+                            between_border=between_border)
+
+    player_name = "Player"
+    player_sprite = AnimatedSprite(
+        sprite_handler.get_animated_sprite(*animated_sprite_coords),
+        [100, 100])
+    return Player(player_sprite, player_name).add_to_group(groups)
+    # player.rect.update(player.rect.left, player.rect.top, player.rect.width, player.rect.height)
+
 
 def render_map(area: Area):
     inanimates = area.get_inanimates()
     for inanimate in inanimates:
-        screen.blit(inanimate.sprite.sprite, inanimate.position) 
+        screen.blit(inanimate.image, inanimate.position) 
 
 
 def hidden():

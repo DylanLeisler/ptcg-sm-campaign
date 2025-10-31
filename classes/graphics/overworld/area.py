@@ -1,5 +1,6 @@
 import pygame
-from typing import Dict, List, Tuple, TypedDict
+from models import TileSheet 
+from typing import List, Tuple, TypedDict
 from .inanimate import Inanimate
 from ...utils.util_logging import graphics_logger as log
 #classes.utils.util_logging import graphics_logger as log
@@ -7,19 +8,9 @@ from ...utils.util_logging import graphics_logger as log
 log.setLevel("WARNING")
 
 
-class AreaProp(TypedDict):
-    TYPE: str
-    EXT: str
-    COLLISION: bool
-    SHORT: str
-    PATH: str
-    IMAGE: pygame.Surface
-    
-class InanimateSpec(TypedDict):
-    INANIMATE: AreaProp
-
-class TileSheet(TypedDict):
-    AREA: InanimateSpec
+class InstructionsType(TypedDict):
+    area: str
+    specs: List[List[str]]
 
 class Area():
     """
@@ -32,7 +23,7 @@ class Area():
     TILES = {}
   
     
-    def __init__(self, screen: 'pygame.Surface', tile_sheet: TileSheet, instructions: Dict[str, List[List[str]]], DIMENSIONS: Tuple[int, int], groups):
+    def __init__(self, screen: 'pygame.Surface', tile_sheet: TileSheet, instructions: InstructionsType, DIMENSIONS: Tuple[int, int], groups):
         """
         NEEDS TO BE UPDATED
         Initializes the MapRenderer with the given screen, tile sheet, and instructions.
@@ -86,9 +77,8 @@ class Area():
             for col_id, col in enumerate(row):
                 tiles = self.tile_sheet[self.area.upper()]
                 image = tiles[col]["IMAGE"]
-                print((Area.OFFSET["x"], Area.OFFSET["y"]))
                 new_sprite = Inanimate(image, 
-                                       (Area.OFFSET["x"], Area.OFFSET["y"]))
+                                       (Area.OFFSET["x"], Area.OFFSET["y"])) # type: ignore
                 new_sprite.position = new_sprite.sprite.position
                 self.inanimates.append(new_sprite)
                 self.add_sprite_to_group(tiles[col]["TYPE"].lower(), new_sprite)

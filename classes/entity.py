@@ -1,3 +1,4 @@
+from typing import Self
 import pygame
 from .graphics.sprite import AnimatedSprite
 
@@ -46,4 +47,27 @@ class Entity(pygame.sprite.Sprite):
     def rect(self, new_rect):
         self.sprite.rect = new_rect
 
-   
+    @property
+    def image(self):
+        return self.sprite.sprite
+    
+    @image.setter
+    def image(self, new_image):
+        self.sprite.sprite = new_image
+        
+    def add_to_group(self, groups: dict) -> Self:
+        groups.setdefault(self.__class__.__name__.lower(), pygame.sprite.Group).add(self)
+        return self
+    
+    def will_collide(self, dx, dy, groups):
+        # Make a light, dynamic class that has the rect property for pygame's sprite.spritecollideany func.
+        future = type("future_position", (), {"rect": self.rect.move(dx, dy)})()
+        return self.is_colliding(groups, future)
+        
+    def is_colliding(self, groups, mover=None):
+        if mover is None:
+            mover = self
+        if (s := pygame.sprite.spritecollideany(mover, groups["wall"])) is not None: # type: ignore
+            # print(f"Collision detected between: {mover} and {s}\n\tMover coordinates at {mover.position}\n\tSprite coordinates at {s.position}")
+            return True
+        return False
